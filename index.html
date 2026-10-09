@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypingX PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     GLOBAL
+  ============================================================ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Google Sans', sans-serif;
+    background: #F4F6FA;
+    color: #0B1F3A;
+    min-width: 1200px;
+    overflow-x: hidden;
+  }
+
+  .tricolor-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    display: flex;
+    z-index: 5;
+  }
+  .tricolor-bar span { flex: 1; }
+  .tricolor-bar span:nth-child(1) { background: #FF9933; }
+  .tricolor-bar span:nth-child(2) { background: #1E4E8C; }
+  .tricolor-bar span:nth-child(3) { background: #138808; }
+
+  /* ============================================================
+     SPLASH
+  ============================================================ */
+  #splashScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 40%, #FFFFFF 0%, #EEF2F8 60%, #E4EAF3 100%);
+    z-index: 9999;
+    animation: fadeIn 0.6s ease-out;
+  }
+  #splashScreen.hidden { display: none; }
+  #splashScreen .tricolor-bar { height: 4px; }
+
+  .splash-logo-badge {
+    width: 96px; height: 96px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1E4E8C 0%, #0F2F5C 100%);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 40px rgba(15,47,92,0.25);
+    margin-bottom: 28px;
+    animation: popIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .splash-logo-badge svg { width: 52px; height: 52px; stroke: #FFFFFF; stroke-width: 2; fill: none; }
+
+  .splash-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #0B1F3A;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .splash-title .pro {
+    font-size: 22px;
+    font-weight: 700;
+    color: #FF9933;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    border: 1.5px solid #FF9933;
+    border-radius: 6px;
+    transform: translateY(-4px);
+  }
+  .splash-tagline {
+    margin-top: 14px;
+    font-size: 15px;
+    color: #56708F;
+    letter-spacing: 0.4px;
+  }
+  .splash-loader {
+    position: absolute;
+    bottom: 90px;
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .splash-loader-track {
+    width: 100%; height: 4px;
+    background: #DDE5F0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .splash-loader-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #FF9933 0%, #1E4E8C 50%, #138808 100%);
+    border-radius: 4px;
+    animation: load 2.4s ease-in-out forwards;
+  }
+  .splash-loader-text {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7C93B3;
+    font-weight: 500;
+  }
+  .splash-footer {
+    position: absolute;
+    bottom: 32px;
+    font-size: 12px;
+    color: #8A9DB8;
+    letter-spacing: 0.5px;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popIn {
+    0%   { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1);    opacity: 1; }
+  }
+  @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
+  /* ============================================================
+     VIEWS
+  ============================================================ */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---------- HEADER ---------- */
+  .app-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 68px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    z-index: 1000;
+    border-bottom: 1px solid #E1E8F2;
+    box-shadow: 0 2px 10px rgba(11,31,58,0.06);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-badge {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1E4E8C 0%, #0F2F5C 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-badge svg { width: 22px; height: 22px; stroke: #FFFFFF; stroke-width: 2; fill: none; }
+  .brand-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0B1F3A;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .brand-name .pro {
+    font-size: 11px;
+    font-weight: 700;
+    color: #FF9933;
+    letter-spacing: 2px;
+    padding: 2px 7px;
+    border: 1.4px solid #FF9933;
+    border-radius: 5px;
+    transform: translateY(-2px);
+  }
+  .admin-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #1E4E8C;
+    background: #EAF1FB;
+    border: 1px solid #D3E2F7;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 6px;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  .admin-btn {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 16px;
+    background: #F7F9FC;
+    border: 1.4px solid #DDE5F0;
+    border-radius: 8px;
+    color: #1E4E8C;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .admin-btn:hover {
+    background: #FFFFFF;
+    border-color: #1E4E8C;
+    color: #0B1F3A;
+    box-shadow: 0 3px 10px rgba(15,47,92,0.1);
+  }
+  .admin-btn svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .logout-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: #F7F9FC;
+    border: 1.4px solid #DDE5F0;
+    border-radius: 8px;
+    color: #B42318;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .logout-btn:hover { background: #FDECEC; border-color: #F5C2C2; }
+  .logout-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  /* ---------- PAGE ---------- */
+  .page {
+    padding: 100px 40px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0B1F3A;
+  }
+  .page-sub {
+    font-size: 14px;
+    color: #56708F;
+    margin-top: 6px;
+    margin-bottom: 26px;
+  }
+
+  /* ---------- TABLES ---------- */
+  .table-card {
+    background: #FFFFFF;
+    border: 1px solid #E1E8F2;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(11,31,58,0.05);
+  }
+  .table-card.full { max-width: 100%; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  thead th {
+    background: #F7F9FC;
+    text-align: left;
+    padding: 16px 20px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #3C5A80;
+    border-bottom: 1px solid #E1E8F2;
+  }
+  thead th.center { text-align: center; }
+
+  tbody td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #EEF2F8;
+    color: #1B3350;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFCFF; }
+
+  .sno { font-weight: 700; color: #0B1F3A; width: 70px; }
+  tbody td.sno { text-align: center; }
+  .test-name { font-weight: 600; color: #0B1F3A; }
+
+  .lang-pill {
+    display: inline-block;
+    padding: 4px 11px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 20px;
+    background: #EAF1FB;
+    color: #1E4E8C;
+    border: 1px solid #D3E2F7;
+    letter-spacing: 0.3px;
+  }
+  .center { text-align: center; }
+
+  .start-btn {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    padding: 9px 22px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #1E4E8C 0%, #0F2F5C 100%);
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 10px rgba(15,47,92,0.25);
+  }
+  .start-btn:hover {
+    background: linear-gradient(135deg, #FF9933 0%, #E5811A 100%);
+    box-shadow: 0 4px 14px rgba(255,153,51,0.4);
+  }
+  .start-btn:active { transform: translateY(1px); }
+
+  .footer {
+    text-align: center;
+    padding: 26px 0 40px;
+    font-size: 12.5px;
+    color: #8A9DB8;
+    letter-spacing: 0.4px;
+  }
+
+  /* ============================================================
+     MODAL
+  ============================================================ */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11,31,58,0.55);
+    backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  .overlay.show { display: flex; }
+
+  .modal {
+    width: 400px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(11,31,58,0.35);
+    animation: modalIn 0.25s cubic-bezier(0.2,0.8,0.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-head {
+    background: #FFFFFF;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    border-bottom: 1px solid #E1E8F2;
+  }
+  .modal-head .tricolor-bar { height: 3px; }
+  .modal-title { color: #0B1F3A; font-size: 16px; font-weight: 700; letter-spacing: 0.3px; }
+  .modal-close {
+    background: transparent;
+    border: none;
+    color: #8A9DB8;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: #0B1F3A; }
+
+  .modal-body { padding: 26px 24px 24px; }
+
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #3C5A80;
+    margin-bottom: 8px;
+  }
+  .field input[type="text"],
+  .field input[type="number"],
+  .field input[type="password"],
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14.5px;
+    color: #0B1F3A;
+    background: #F7F9FC;
+    border: 1.4px solid #DDE5F0;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .field textarea { min-height: 180px; resize: vertical; line-height: 1.6; }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: #1E4E8C;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(30,78,140,0.12);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 13px;
+    margin-top: 6px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #1E4E8C 0%, #0F2F5C 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(15,47,92,0.25);
+  }
+  .login-btn:hover {
+    background: linear-gradient(135deg, #FF9933 0%, #E5811A 100%);
+    box-shadow: 0 4px 16px rgba(255,153,51,0.4);
+  }
+  .modal-foot-note {
+    text-align: center;
+    font-size: 12px;
+    color: #8A9DB8;
+    margin-top: 16px;
+    letter-spacing: 0.3px;
+  }
+  .error-msg {
+    display: none;
+    background: #FDECEC;
+    border: 1px solid #F5C2C2;
+    color: #B42318;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    letter-spacing: 0.2px;
+  }
+  .error-msg.show { display: block; }
+
+  /* ============================================================
+     ADMIN TABS + CARDS
+  ============================================================ */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid #E1E8F2;
+    margin-bottom: 28px;
+  }
+  .tab-btn {
+    padding: 13px 22px;
+    background: transparent;
+    border: none;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #56708F;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .tab-btn svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .tab-btn:hover { color: #1E4E8C; }
+  .tab-btn.active {
+    color: #1E4E8C;
+    border-bottom-color: #1E4E8C;
+    background: rgba(30,78,140,0.04);
+    border-radius: 8px 8px 0 0;
+  }
+
+  .card {
+    background: #FFFFFF;
+    border: 1px solid #E1E8F2;
+    border-radius: 12px;
+    padding: 30px 32px;
+    box-shadow: 0 4px 18px rgba(11,31,58,0.05);
+    max-width: 880px;
+  }
+  .card.full { max-width: 100%; }
+  .card-title { font-size: 17px; font-weight: 700; color: #0B1F3A; margin-bottom: 6px; }
+  .card-desc { font-size: 13.5px; color: #56708F; margin-bottom: 24px; line-height: 1.5; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .full-col { grid-column: 1 / -1; }
+
+  .file-drop {
+    border: 2px dashed #C9D6E8;
+    border-radius: 10px;
+    background: #FAFCFF;
+    padding: 26px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .file-drop:hover { border-color: #1E4E8C; background: #F4F8FD; }
+  .file-drop input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer;
+  }
+  .file-drop svg {
+    width: 34px; height: 34px;
+    stroke: #1E4E8C; stroke-width: 1.8; fill: none;
+    margin-bottom: 8px;
+  }
+  .file-drop-title { font-size: 14.5px; font-weight: 600; color: #0B1F3A; margin-bottom: 4px; }
+  .file-drop-hint { font-size: 12.5px; color: #8A9DB8; }
+  .file-chosen {
+    margin-top: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #138808;
+    display: none;
+  }
+  .file-chosen.show { display: block; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 12px 26px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #1E4E8C 0%, #0F2F5C 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(15,47,92,0.25);
+    margin-top: 6px;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #FF9933 0%, #E5811A 100%);
+    box-shadow: 0 4px 16px rgba(255,153,51,0.4);
+  }
+  .btn-primary svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px;
+    border-radius: 7px;
+    border: 1.4px solid #DDE5F0;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 3px;
+  }
+  .icon-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .icon-btn.edit { color: #1E4E8C; }
+  .icon-btn.edit:hover { background: #EAF1FB; border-color: #1E4E8C; }
+  .icon-btn.del { color: #B42318; }
+  .icon-btn.del:hover { background: #FDECEC; border-color: #F5C2C2; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .toast {
+    position: fixed;
+    bottom: 30px; right: 30px;
+    background: #EAF7EE;
+    border: 1px solid #B8E3C4;
+    color: #1B7A38;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(11,31,58,0.15);
+    display: none;
+    z-index: 3000;
+  }
+  .toast.show { display: block; animation: toastIn 0.3s ease-out; }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================================================
+     TYPING TEST VIEW
+  ============================================================ */
+  #testView {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #testView .app-header {
+    position: fixed;
+  }
+
+  .test-header-left { display: flex; align-items: center; gap: 16px; }
+  .exit-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    background: #F7F9FC;
+    border: 1.4px solid #DDE5F0;
+    border-radius: 8px;
+    color: #1E4E8C;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .exit-btn:hover { background: #FDECEC; border-color: #F5C2C2; color: #B42318; }
+  .exit-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+  .test-title-wrap { display: flex; align-items: center; gap: 10px; }
+  .test-title { font-size: 15.5px; font-weight: 700; color: #0B1F3A; }
+  .test-lang-pill {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #1E4E8C;
+    background: #EAF1FB;
+    border: 1px solid #D3E2F7;
+    padding: 4px 9px;
+    border-radius: 20px;
+  }
+
+  .timer-display {
+    font-size: 30px;
+    font-weight: 700;
+    color: #0B1F3A;
+    letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+    padding: 0 14px;
+    transition: color 0.3s;
+  }
+  .timer-display.warning { color: #B42318; animation: pulse 1s infinite; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .submit-test-btn {
+    padding: 10px 22px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #1E4E8C 0%, #0F2F5C 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(15,47,92,0.25);
+  }
+  .submit-test-btn:hover {
+    background: linear-gradient(135deg, #FF9933 0%, #E5811A 100%);
+  }
+
+  .test-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 84px 40px 30px;
+    gap: 14px;
+    overflow: hidden;
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    border: 1px solid #E1E8F2;
+    border-radius: 10px;
+    padding: 12px 20px;
+    box-shadow: 0 2px 10px rgba(11,31,58,0.04);
+  }
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: #3C5A80;
+    letter-spacing: 0.2px;
+  }
+  .stat-item strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0B1F3A;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-sep { width: 1px; height: 22px; background: #E1E8F2; margin: 0 6px; }
+  .stat-item.green strong { color: #138808; }
+  .stat-item.red strong { color: #B42318; }
+  .stat-item.orange strong { color: #E5811A; }
+
+  /* Passage box */
+  .passage-box {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #E1E8F2;
+    border-radius: 12px;
+    padding: 26px 32px;
+    overflow-y: auto;
+    box-shadow: 0 4px 18px rgba(11,31,58,0.05);
+    font-size: 200%;       /* 200% as required */
+    line-height: 1.9;
+    color: #1B3350;
+    letter-spacing: 0.2px;
+    word-spacing: 2px;
+  }
+
+  .passage-word {
+    padding: 2px 4px;
+    border-radius: 5px;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .passage-word.correct {
+    color: #0E6B33;
+    background: #E3F5EA;
+  }
+  .passage-word.incorrect {
+    color: #B42318;
+    background: #FDECEC;
+    text-decoration: underline wavy #B42318;
+  }
+  .passage-word.active {
+    background: #FFF4D9;
+    color: #0B1F3A;
+    box-shadow: inset 0 -3px 0 #FF9933;
+  }
+
+  /* Typing box */
+  .typing-box {
+    height: 180px;
+    background: #FFFFFF;
+    border: 2px solid #1E4E8C;
+    border-radius: 12px;
+    padding: 20px 28px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 200%;       /* same font size */
+    line-height: 1.7;
+    color: #0B1F3A;
+    letter-spacing: 0.2px;
+    word-spacing: 2px;
+    resize: none;
+    outline: none;
+    box-shadow: 0 4px 18px rgba(30,78,140,0.12);
+    transition: border-color 0.2s;
+  }
+  .typing-box:focus { border-color: #FF9933; box-shadow: 0 4px 18px rgba(255,153,51,0.2); }
+  .typing-box::placeholder { color: #A9BBD3; font-weight: 400; }
+
+  /* ============================================================
+     RESULT VIEW
+  ============================================================ */
+  #resultView { min-height: 100vh; }
+
+  .result-wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 120px 40px 60px;
+  }
+
+  .result-card {
+    background: #FFFFFF;
+    border: 1px solid #E1E8F2;
+    border-radius: 16px;
+    padding: 40px 44px;
+    box-shadow: 0 8px 30px rgba(11,31,58,0.08);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card .tricolor-bar { height: 4px; border-radius: 16px 16px 0 0; }
+
+  .result-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #1E4E8C;
+    margin-bottom: 8px;
+  }
+  .result-test-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0B1F3A;
+    margin-bottom: 6px;
+  }
+  .result-lang {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 20px;
+    background: #EAF1FB;
+    color: #1E4E8C;
+    border: 1px solid #D3E2F7;
+    margin-bottom: 30px;
+  }
+
+  .marks-display {
+    margin: 10px 0 34px;
+  }
+  .marks-big {
+    font-size: 72px;
+    font-weight: 700;
+    color: #0B1F3A;
+    line-height: 1;
+    letter-spacing: -2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .marks-big .total {
+    font-size: 30px;
+    color: #8A9DB8;
+    font-weight: 600;
+  }
+  .marks-label {
+    font-size: 13px;
+    color: #56708F;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 34px;
+  }
+  .result-stat {
+    background: #F7F9FC;
+    border: 1px solid #E1E8F2;
+    border-radius: 10px;
+    padding: 18px 12px;
+    text-align: center;
+  }
+  .result-stat .val {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0B1F3A;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+  .result-stat .val.green { color: #138808; }
+  .result-stat .val.red { color: #B42318; }
+  .result-stat .lbl {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #56708F;
+    margin-top: 6px;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 24px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E4E8C;
+    background: #F7F9FC;
+    border: 1.4px solid #DDE5F0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: #EAF1FB; border-color: #1E4E8C; }
+</style>
+</head>
+<body>
+
+  <!-- ============================================================
+       SPLASH SCREEN
+  ============================================================ -->
+  <div id="splashScreen">
+    <div class="tricolor-bar"><span></span><span></span><span></span></div>
+
+    <div class="splash-logo-badge">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="12" rx="2.5"/>
+        <line x1="6"  y1="10" x2="6"  y2="10"/>
+        <line x1="10" y1="10" x2="10" y2="10"/>
+        <line x1="14" y1="10" x2="14" y2="10"/>
+        <line x1="18" y1="10" x2="18" y2="10"/>
+        <line x1="7"  y1="14" x2="17" y2="14"/>
+      </svg>
+    </div>
+
+    <div class="splash-title">TypingX <span class="pro">PRO</span></div>
+    <div class="splash-tagline">Precision Typing. Professional Performance.</div>
+
+    <div class="splash-loader">
+      <div class="splash-loader-track"><div class="splash-loader-fill"></div></div>
+      <div class="splash-loader-text">Initializing Workspace</div>
+    </div>
+
+    <div class="splash-footer">A Professional Typing Platform</div>
+  </div>
+
+  <!-- ============================================================
+       HOME VIEW
+  ============================================================ -->
+  <div class="view" id="homeView">
+    <header class="app-header">
+      <div class="tricolor-bar"><span></span><span></span><span></span></div>
+
+      <div class="brand">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2.5"/>
+            <line x1="6"  y1="10" x2="6"  y2="10"/>
+            <line x1="10" y1="10" x2="10" y2="10"/>
+            <line x1="14" y1="10" x2="14" y2="10"/>
+            <line x1="18" y1="10" x2="18" y2="10"/>
+            <line x1="7"  y1="14" x2="17" y2="14"/>
+          </svg>
+        </div>
+        <div class="brand-name">TypingX <span class="pro">PRO</span></div>
+      </div>
+
+      <div class="header-right">
+        <button class="admin-btn" id="openAdminLogin">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Admin Control Panel
+        </button>
+      </div>
+    </header>
+
+    <main class="page">
+      <h1 class="page-title">Available Typing Tests</h1>
+      <p class="page-sub">Select any test from the list below and click Start to begin your session.</p>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th class="center">S. No.</th>
+              <th>Test Name</th>
+              <th>Language</th>
+              <th class="center">Average Word Length</th>
+              <th class="center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="homeTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="footer">© 2025 TypingX PRO — A Professional Typing Platform</div>
+    </main>
+  </div>
+
+  <!-- ============================================================
+       ADMIN VIEW
+  ============================================================ -->
+  <div class="view" id="adminView">
+    <header class="app-header">
+      <div class="tricolor-bar"><span></span><span></span><span></span></div>
+
+      <div class="brand">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2.5"/>
+            <line x1="6"  y1="10" x2="6"  y2="10"/>
+            <line x1="10" y1="10" x2="10" y2="10"/>
+            <line x1="14" y1="10" x2="14" y2="10"/>
+            <line x1="18" y1="10" x2="18" y2="10"/>
+            <line x1="7"  y1="14" x2="17" y2="14"/>
+          </svg>
+        </div>
+        <div class="brand-name">TypingX <span class="pro">PRO</span></div>
+        <span class="admin-tag">Admin</span>
+      </div>
+
+      <div class="header-right">
+        <button class="logout-btn" id="logoutBtn">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <main class="page">
+      <h1 class="page-title">Admin Control Panel</h1>
+      <p class="page-sub">Manage fonts, generate typing tests, and control all existing tests from one dashboard.</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="generate">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Generate Test
+        </button>
+        <button class="tab-btn" data-tab="font">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h16"/>
+            <path d="M6 16L12 4l6 12"/>
+            <line x1="9" y1="12" x2="15" y2="12"/>
+          </svg>
+          Upload Font
+        </button>
+        <button class="tab-btn" data-tab="manage">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+          Manage Tests
+        </button>
+      </div>
+
+      <section class="panel active" id="panel-generate">
+        <div class="card">
+          <div class="card-title">Generate New Typing Test</div>
+          <div class="card-desc">Create a language-specific typing test. The average word length will be calculated automatically. Hindi tests display 400 words, English tests display 500 words, and every test is 10 minutes with a total of 25 marks.</div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="genName">Test Name</label>
+              <input type="text" id="genName" placeholder="e.g., General English Speed Test">
+            </div>
+
+            <div class="field">
+              <label for="genLang">Language</label>
+              <select id="genLang">
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Marathi">Marathi</option>
+                <option value="Gujarati">Gujarati</option>
+                <option value="Bengali">Bengali</option>
+                <option value="Tamil">Tamil</option>
+                <option value="Telugu">Telugu</option>
+                <option value="Kannada">Kannada</option>
+                <option value="Punjabi">Punjabi</option>
+                <option value="Urdu">Urdu</option>
+              </select>
+            </div>
+
+            <div class="field full-col">
+              <label for="genContent">Test Content</label>
+              <textarea id="genContent" placeholder="Paste or type the full paragraph content for the typing test here..."></textarea>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="generateBtn">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Generate Test
+          </button>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-font">
+        <div class="card">
+          <div class="card-title">Upload Font for Language</div>
+          <div class="card-desc">Upload a custom font file (.ttf / .otf / .woff / .woff2) that will be applied to the passage box and typing box of the selected language at 200% size.</div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="fontLang">Language</label>
+              <select id="fontLang">
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Marathi">Marathi</option>
+                <option value="Gujarati">Gujarati</option>
+                <option value="Bengali">Bengali</option>
+                <option value="Tamil">Tamil</option>
+                <option value="Telugu">Telugu</option>
+                <option value="Kannada">Kannada</option>
+                <option value="Punjabi">Punjabi</option>
+                <option value="Urdu">Urdu</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="fontName">Font Display Name</label>
+              <input type="text" id="fontName" placeholder="e.g., Kruti Dev 010">
+            </div>
+
+            <div class="field full-col">
+              <label>Font File</label>
+              <div class="file-drop">
+                <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <div class="file-drop-title">Click to upload or drag font file here</div>
+                <div class="file-drop-hint">Supported: .ttf, .otf, .woff, .woff2</div>
+                <div class="file-chosen" id="fontChosen"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="uploadFontBtn">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Upload Font
+          </button>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-manage">
+        <div class="card full">
+          <div class="card-title">Manage Existing Tests</div>
+          <div class="card-desc">View, edit, or delete previously generated typing tests. Changes reflect immediately on the homepage.</div>
+
+          <div class="table-card full">
+            <table>
+              <thead>
+                <tr>
+                  <th class="center" style="width:70px;">S. No.</th>
+                  <th>Test Name</th>
+                  <th>Language</th>
+                  <th class="center">Average Word Length</th>
+                  <th class="center" style="width:140px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="manageTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer">© 2025 TypingX PRO — Admin Control Panel</div>
+    </main>
+  </div>
+
+  <!-- ============================================================
+       TYPING TEST VIEW
+  ============================================================ -->
+  <div class="view" id="testView">
+    <header class="app-header">
+      <div class="tricolor-bar"><span></span><span></span><span></span></div>
+
+      <div class="test-header-left">
+        <button class="exit-btn" id="exitTestBtn">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Exit
+        </button>
+        <div class="test-title-wrap">
+          <div class="test-title" id="testNameLabel">Test</div>
+          <div class="test-lang-pill" id="testLangLabel">Language</div>
+        </div>
+      </div>
+
+      <div class="timer-display" id="timerDisplay">10:00</div>
+
+      <div class="header-right">
+        <button class="submit-test-btn" id="submitTestBtn">Submit Test</button>
+      </div>
+    </header>
+
+    <div class="test-body">
+      <div class="stats-strip">
+        <div class="stat-item">
+          Words Typed: <strong id="wordsTyped">0</strong> / <strong id="wordsTotal">0</strong>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item green">
+          Correct: <strong id="correctCount">0</strong>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item red">
+          Incorrect: <strong id="incorrectCount">0</strong>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item orange">
+          Marks: <strong id="marksPreview">0.00</strong> / <strong>25</strong>
+        </div>
+      </div>
+
+      <div class="passage-box" id="passageBox"></div>
+
+      <textarea class="typing-box" id="typingBox" placeholder="Start typing here. Each word will be counted after you press the space bar..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       RESULT VIEW
+  ============================================================ -->
+  <div class="view" id="resultView">
+    <header class="app-header">
+      <div class="tricolor-bar"><span></span><span></span><span></span></div>
+      <div class="brand">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2.5"/>
+            <line x1="6"  y1="10" x2="6"  y2="10"/>
+            <line x1="10" y1="10" x2="10" y2="10"/>
+            <line x1="14" y1="10" x2="14" y2="10"/>
+            <line x1="18" y1="10" x2="18" y2="10"/>
+            <line x1="7"  y1="14" x2="17" y2="14"/>
+          </svg>
+        </div>
+        <div class="brand-name">TypingX <span class="pro">PRO</span></div>
+      </div>
+    </header>
+
+    <div class="result-wrap">
+      <div class="result-card">
+        <div class="tricolor-bar"><span></span><span></span><span></span></div>
+
+        <div class="result-title">Test Result</div>
+        <div class="result-test-name" id="resTestName">—</div>
+        <div class="result-lang" id="resLanguage">—</div>
+
+        <div class="marks-display">
+          <div class="marks-big"><span id="resMarksVal">0.00</span> <span class="total">/ 25</span></div>
+          <div class="marks-label">Total Marks Obtained</div>
+        </div>
+
+        <div class="result-stats">
+          <div class="result-stat">
+            <div class="val" id="resTotalWords">0</div>
+            <div class="lbl">Total Words</div>
+          </div>
+          <div class="result-stat">
+            <div class="val" id="resAttempted">0</div>
+            <div class="lbl">Attempted</div>
+          </div>
+          <div class="result-stat">
+            <div class="val green" id="resCorrect">0</div>
+            <div class="lbl">Correct</div>
+          </div>
+          <div class="result-stat">
+            <div class="val red" id="resIncorrect">0</div>
+            <div class="lbl">Incorrect</div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn-secondary" id="retakeBtn">Retake Test</button>
+          <button class="btn-primary" id="backHomeBtn" style="margin-top:0;">Back to Home</button>
+        </div>
+      </div>
+
+      <div class="footer">© 2025 TypingX PRO — A Professional Typing Platform</div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN LOGIN MODAL
+  ============================================================ -->
+  <div class="overlay" id="adminLoginOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="tricolor-bar"><span></span><span></span><span></span></div>
+        <div class="modal-title">Admin Control Panel — Secure Login</div>
+        <button class="modal-close" id="closeAdminLogin">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="error-msg" id="loginError">Invalid ID or password. Please try again.</div>
+
+        <div class="field">
+          <label for="adminId">Admin ID</label>
+          <input type="text" id="adminId" placeholder="Enter admin ID" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="off">
+        </div>
+
+        <button class="login-btn" id="loginSubmit">Sign In to Control Panel</button>
+
+        <div class="modal-foot-note">Authorized personnel only. All access is monitored.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">Action completed successfully.</div>
+
+  <script>
+    /* ============================================================
+       CONSTANTS
+    ============================================================ */
+    const ADMIN_ID          = '1234';
+    const ADMIN_PASSWORD    = '1234';
+    const TEST_DURATION     = 10 * 60;   // 10 minutes in seconds
+    const TOTAL_MARKS       = 25;
+    const WORD_LIMIT        = { 'Hindi': 400, 'English': 500 };
+    const DEFAULT_LIMIT     = 500;
+
+    /* Demo filler content */
+    const EN_FILLER = "The quick brown fox jumps over the lazy dog near the river bank. Professional typists must maintain high accuracy and consistent speed throughout every session. Government examinations require candidates to demonstrate excellent typing proficiency with minimal errors. Regular practice with varied passages improves both speed and precision significantly over time. Focus on rhythm and posture to reduce fatigue during long typing sessions. Accuracy matters more than raw speed in official typing evaluations. Every keystroke should be deliberate and precise to achieve the desired outcome.";
+    const HI_FILLER = "भारत सरकार के कार्यालयों में टाइपिंग कौशल की अत्यधिक आवश्यकता होती है। पेशेवर टाइपिस्ट को उच्च सटीकता और निरंतर गति बनाए रखनी चाहिए। सरकारी परीक्षाओं में अभ्यर्थियों को न्यूनतम त्रुटियों के साथ उत्कृष्ट टाइपिंग दक्षता प्रदर्शित करनी होती है। नियमित अभ्यास से गति और सटीकता दोनों में उल्लेखनीय सुधार होता है। सटीकता गति से अधिक महत्वपूर्ण है।";
+
+    /* ============================================================
+       GLOBAL STATE
+    ============================================================ */
+    let tests = [
+      { name: "General English Speed Test",   language: "English", avgWordLength: 5.2, content: EN_FILLER },
+      { name: "Government Office Typing Set", language: "Hindi",   avgWordLength: 4.6, content: HI_FILLER },
+      { name: "Advanced Paragraph Test",      language: "English", avgWordLength: 5.8, content: EN_FILLER },
+      { name: "Basic Accuracy Drill",         language: "English", avgWordLength: 4.9, content: EN_FILLER },
+      { name: "Hindi Vishisht Abhyas",        language: "Hindi",   avgWordLength: 4.3, content: HI_FILLER }
+    ];
+
+    const languageFonts = {};   // { 'English': 'FontName', 'Hindi': 'FontName' }
+
+    /* Test runtime state */
+    let currentTest       = null;
+    let currentTestIndex  = -1;
+    let currentWords      = [];
+    let timeLeft          = 0;
+    let timerInterval     = null;
+    let correctCount      = 0;
+    let incorrectCount    = 0;
+    let testActive        = false;
+
+    /* ============================================================
+       VIEW HELPERS
+    ============================================================ */
+    function hideAllViews() {
+      document.getElementById('homeView').classList.remove('active');
+      document.getElementById('adminView').classList.remove('active');
+      document.getElementById('testView').classList.remove('active');
+      document.getElementById('resultView').classList.remove('active');
+    }
+
+    function showHome() {
+      document.getElementById('splashScreen').classList.add('hidden');
+      hideAllViews();
+      document.getElementById('homeView').classList.add('active');
+      renderHomeTable();
+      window.scrollTo(0, 0);
+    }
+
+    function showAdmin() {
+      document.getElementById('splashScreen').classList.add('hidden');
+      hideAllViews();
+      document.getElementById('adminView').classList.add('active');
+      renderManageTable();
+      window.scrollTo(0, 0);
+    }
+
+    /* ============================================================
+       SPLASH → HOME
+    ============================================================ */
+    window.addEventListener('load', () => {
+      setTimeout(showHome, 2600);
+    });
+
+    /* ============================================================
+       HOME TABLE
+    ============================================================ */
+    function renderHomeTable() {
+      const tbody = document.getElementById('homeTableBody');
+      tbody.innerHTML = '';
+
+      if (tests.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#8A9DB8; padding:30px;">No tests available yet. Please check back later.</td></tr>';
+        return;
+      }
+
+      tests.forEach((test, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="sno">${index + 1}</td>
+          <td class="test-name">${test.name}</td>
+          <td><span class="lang-pill">${test.language}</span></td>
+          <td class="center">${test.avgWordLength}</td>
+          <td class="center"><button class="start-btn" data-index="${index}">Start</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    document.getElementById('homeTableBody').addEventListener('click', (e) => {
+      if (e.target.classList.contains('start-btn')) {
+        startTest(parseInt(e.target.dataset.index));
+      }
+    });
+
+    /* ============================================================
+       ADMIN LOGIN
+    ============================================================ */
+    const loginOverlay = document.getElementById('adminLoginOverlay');
+    const loginError   = document.getElementById('loginError');
+
+    document.getElementById('openAdminLogin').addEventListener('click', () => {
+      loginOverlay.classList.add('show');
+      loginError.classList.remove('show');
+      document.getElementById('adminId').value = '';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('adminId').focus();
+    });
+
+    document.getElementById('closeAdminLogin').addEventListener('click', () => {
+      loginOverlay.classList.remove('show');
+    });
+
+    loginOverlay.addEventListener('click', (e) => {
+      if (e.target === loginOverlay) loginOverlay.classList.remove('show');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') loginOverlay.classList.remove('show');
+    });
+
+    function attemptLogin() {
+      const id  = document.getElementById('adminId').value.trim();
+      const pwd = document.getElementById('adminPassword').value.trim();
+      if (id === ADMIN_ID && pwd === ADMIN_PASSWORD) {
+        loginOverlay.classList.remove('show');
+        showAdmin();
+      } else {
+        loginError.classList.add('show');
+      }
+    }
+
+    document.getElementById('loginSubmit').addEventListener('click', attemptLogin);
+    document.getElementById('adminPassword').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') attemptLogin();
+    });
+    document.getElementById('adminId').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('adminPassword').focus();
+    });
+
+    /* ============================================================
+       LOGOUT
+    ============================================================ */
+    document.getElementById('logoutBtn').addEventListener('click', showHome);
+
+    /* ============================================================
+       ADMIN TABS
+    ============================================================ */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    const toastEl = document.getElementById('toast');
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    /* ============================================================
+       MANAGE TESTS
+    ============================================================ */
+    function renderManageTable() {
+      const tbody = document.getElementById('manageTableBody');
+      tbody.innerHTML = '';
+
+      if (tests.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#8A9DB8; padding:30px;">No tests available. Generate a new test to get started.</td></tr>';
+        return;
+      }
+
+      tests.forEach((test, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="sno">${index + 1}</td>
+          <td class="test-name">${test.name}</td>
+          <td><span class="lang-pill">${test.language}</span></td>
+          <td class="center">${test.avgWordLength}</td>
+          <td class="center">
+            <button class="icon-btn edit" data-index="${index}" title="Edit">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="icon-btn del" data-index="${index}" title="Delete">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                <path d="M10 11v6M14 11v6"/>
+              </svg>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    document.getElementById('manageTableBody').addEventListener('click', (e) => {
+      const delBtn  = e.target.closest('.icon-btn.del');
+      const editBtn = e.target.closest('.icon-btn.edit');
+
+      if (delBtn) {
+        const idx = parseInt(delBtn.dataset.index);
+        if (confirm(`Delete "${tests[idx].name}"? This cannot be undone.`)) {
+          tests.splice(idx, 1);
+          renderManageTable();
+          showToast('Test deleted successfully.');
+        }
+      }
+
+      if (editBtn) {
+        const idx = parseInt(editBtn.dataset.index);
+        const t = tests[idx];
+        const newName = prompt('Edit test name:', t.name);
+        if (newName !== null && newName.trim() !== '') {
+          tests[idx].name = newName.trim();
+          renderManageTable();
+          showToast('Test updated successfully.');
+        }
+      }
+    });
+
+    /* ============================================================
+       GENERATE TEST
+    ============================================================ */
+    function calculateAvgWordLength(content) {
+      const words = content.trim().split(/\s+/).filter(w => w.length > 0);
+      if (words.length === 0) return 0;
+      const totalChars = words.reduce((sum, w) => sum + w.length, 0);
+      return (totalChars / words.length).toFixed(1);
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      const name    = document.getElementById('genName').value.trim();
+      const lang    = document.getElementById('genLang').value;
+      const content = document.getElementById('genContent').value.trim();
+
+      if (!name || !lang || !content) {
+        alert('Please fill all fields: Test Name, Language, and Content.');
+        return;
+      }
+
+      const avg = parseFloat(calculateAvgWordLength(content));
+      tests.push({ name, language: lang, avgWordLength: avg, content });
+      renderManageTable();
+
+      document.getElementById('genName').value = '';
+      document.getElementById('genLang').value = '';
+      document.getElementById('genContent').value = '';
+
+      showToast('Test generated successfully.');
+    });
+
+    /* ============================================================
+       FONT UPLOAD (real FontFace registration)
+    ============================================================ */
+    const fontFileInput = document.getElementById('fontFile');
+    const fontChosen    = document.getElementById('fontChosen');
+
+    fontFileInput.addEventListener('change', () => {
+      if (fontFileInput.files.length > 0) {
+        fontChosen.textContent = 'Selected: ' + fontFileInput.files[0].name;
+        fontChosen.classList.add('show');
+      } else {
+        fontChosen.classList.remove('show');
+      }
+    });
+
+    document.getElementById('uploadFontBtn').addEventListener('click', () => {
+      const lang = document.getElementById('fontLang').value;
+      const name = document.getElementById('fontName').value.trim();
+      const file = fontFileInput.files[0];
+
+      if (!lang || !name || !file) {
+        alert('Please select Language, enter Font Name, and choose a font file.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const buffer = ev.target.result;
+        const fontFace = new FontFace(name, buffer);
+        fontFace.load().then((loaded) => {
+          document.fonts.add(loaded);
+          languageFonts[lang] = name;
+
+          document.getElementById('fontLang').value = '';
+          document.getElementById('fontName').value = '';
+          fontFileInput.value = '';
+          fontChosen.classList.remove('show');
+
+          showToast(`Font "${name}" registered for ${lang}.`);
+        }).catch((err) => {
+          alert('Failed to load font file. Please ensure it is a valid font.');
+          console.error(err);
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    /* ============================================================
+       TYPING TEST — START
+    ============================================================ */
+    function startTest(index) {
+      const test = tests[index];
+      if (!test) return;
+
+      currentTest = test;
+      currentTestIndex = index;
+
+      /* Determine word limit */
+      const limit = WORD_LIMIT[test.language] || DEFAULT_LIMIT;
+
+      /* Build word list (repeat content if too short) */
+      const rawWords = (test.content || '').split(/\s+/).filter(w => w.length > 0);
+      if (rawWords.length === 0) {
+        alert('This test has no content. Please contact the administrator.');
+        return;
+      }
+
+      let built = [];
+      while (built.length < limit) {
+        built = built.concat(rawWords);
+        if (rawWords.length === 0) break;
+        if (built.length >= limit * 3) break;    // safety
+      }
+      currentWords = built.slice(0, limit);
+
+      /* Apply font */
+      const font = languageFonts[test.language];
+      const fontStack = font
+        ? `"${font}", 'Google Sans', sans-serif`
+        : "'Google Sans', sans-serif";
+
+      const passageBox = document.getElementById('passageBox');
+      const typingBox  = document.getElementById('typingBox');
+      passageBox.style.fontFamily = fontStack;
+      typingBox.style.fontFamily  = fontStack;
+
+      /* Render passage */
+      renderPassage();
+
+      /* Reset typing */
+      typingBox.value = '';
+      typingBox.disabled = false;
+      correctCount = 0;
+      incorrectCount = 0;
+      testActive = true;
+
+      /* Reset header / stats */
+      document.getElementById('testNameLabel').textContent = test.name;
+      document.getElementById('testLangLabel').textContent = test.language;
+      document.getElementById('wordsTotal').textContent   = currentWords.length;
+      document.getElementById('wordsTyped').textContent   = '0';
+      document.getElementById('correctCount').textContent = '0';
+      document.getElementById('incorrectCount').textContent = '0';
+      document.getElementById('marksPreview').textContent = '0.00';
+
+      /* Timer */
+      timeLeft = TEST_DURATION;
+      updateTimerDisplay();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endTest();
+        }
+      }, 1000);
+
+      /* Switch view */
+      hideAllViews();
+      document.getElementById('testView').classList.add('active');
+
+      /* Focus typing box */
+      setTimeout(() => typingBox.focus(), 120);
+    }
+
+    function renderPassage() {
+      const box = document.getElementById('passageBox');
+      box.innerHTML = '';
+      currentWords.forEach((word, i) => {
+        const span = document.createElement('span');
+        span.className = 'passage-word';
+        span.textContent = word;
+        span.dataset.index = i;
+        box.appendChild(span);
+        if (i < currentWords.length - 1) {
+          box.appendChild(document.createTextNode(' '));
+        }
+      });
+      /* Mark first word active */
+      const first = box.querySelector('.passage-word');
+      if (first) first.classList.add('active');
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(Math.max(0, timeLeft) / 60);
+      const s = Math.max(0, timeLeft) % 60;
+      const el = document.getElementById('timerDisplay');
+      el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      if (timeLeft <= 60) el.classList.add('warning');
+      else el.classList.remove('warning');
+    }
+
+    /* ============================================================
+       TYPING TEST — INPUT HANDLER (space-based word counting)
+    ============================================================ */
+    const typingBox = document.getElementById('typingBox');
+
+    typingBox.addEventListener('input', () => {
+      if (!testActive) return;
+
+      const text = typingBox.value;
+
+      /* Determine completed words:
+         - Split by single space.
+         - If the text ends with a space, all segments (minus the trailing empty) are completed.
+         - Otherwise the last segment is still being typed.
+      */
+      const segments = text.split(' ');
+      let completedWords = text.endsWith(' ')
+        ? segments.slice(0, -1)
+        : segments.slice(0, -1);
+
+      /* If text does not end with space, the last segment is in-progress */
+      const inProgress = text.endsWith(' ') ? '' : segments[segments.length - 1];
+
+      /* Count correct / incorrect */
+      correctCount = 0;
+      incorrectCount = 0;
+
+      completedWords.forEach((w, i) => {
+        if (i >= currentWords.length) return;
+        if (w === currentWords[i]) correctCount++;
+        else incorrectCount++;
+      });
+
+      /* Update passage word colours */
+      const spans = document.querySelectorAll('.passage-word');
+      spans.forEach((span, i) => {
+        span.classList.remove('correct', 'incorrect', 'active');
+        if (i < completedWords.length) {
+          span.classList.add(completedWords[i] === currentWords[i] ? 'correct' : 'incorrect');
+        } else if (i === completedWords.length) {
+          span.classList.add('active');
+        }
+      });
+
+      /* Auto-scroll active word into view */
+      const activeSpan = document.querySelector('.passage-word.active');
+      if (activeSpan) activeSpan.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+      /* Update stats */
+      const marks = (correctCount / currentWords.length) * TOTAL_MARKS;
+      document.getElementById('wordsTyped').textContent   = completedWords.length;
+      document.getElementById('correctCount').textContent = correctCount;
+      document.getElementById('incorrectCount').textContent = incorrectCount;
+      document.getElementById('marksPreview').textContent = marks.toFixed(2);
+
+      /* Auto-end when last word is completed (with trailing space) */
+      if (completedWords.length >= currentWords.length) {
+        clearInterval(timerInterval);
+        endTest();
+      }
+    });
+
+    /* ============================================================
+       TYPING TEST — SUBMIT / EXIT
+    ============================================================ */
+    document.getElementById('submitTestBtn').addEventListener('click', () => {
+      if (testActive) {
+        endTest();
+      }
+    });
+
+    document.getElementById('exitTestBtn').addEventListener('click', () => {
+      if (testActive) {
+        if (!confirm('Are you sure you want to exit? Your progress will be lost.')) return;
+      }
+      testActive = false;
+      clearInterval(timerInterval);
+      showHome();
+    });
+
+    /* ============================================================
+       TYPING TEST — END + RESULT
+    ============================================================ */
+    function endTest() {
+      testActive = false;
+      clearInterval(timerInterval);
+      document.getElementById('typingBox').disabled = true;
+
+      const totalWords = currentWords.length;
+      const correct    = correctCount;
+      const incorrect  = incorrectCount;
+      const attempted  = correct + incorrect;
+      const marks      = totalWords > 0 ? (correct / totalWords) * TOTAL_MARKS : 0;
+
+      document.getElementById('resTestName').textContent   = currentTest.name;
+      document.getElementById('resLanguage').textContent   = currentTest.language;
+      document.getElementById('resTotalWords').textContent = totalWords;
+      document.getElementById('resAttempted').textContent  = attempted;
+      document.getElementById('resCorrect').textContent    = correct;
+      document.getElementById('resIncorrect').textContent  = incorrect;
+      document.getElementById('resMarksVal').textContent   = marks.toFixed(2);
+
+      hideAllViews();
+      document.getElementById('resultView').classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById('retakeBtn').addEventListener('click', () => {
+      if (currentTestIndex >= 0) startTest(currentTestIndex);
+    });
+
+    document.getElementById('backHomeBtn').addEventListener('click', showHome);
+  </script>
+
+</body>
+</html>
