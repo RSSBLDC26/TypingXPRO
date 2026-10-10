@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TypingX PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gov-navy:#003366; --gov-navy-dark:#002347; --gov-navy-mid:#0a4a8f; --gov-navy-soft:#e8eff7;
+    --gov-saffron:#e67300; --gov-saffron-light:#ff9933; --gov-saffron-soft:#fff4e6;
+    --gov-green:#138808; --gov-green-dark:#0d5c05; --gov-green-soft:#eaf5e9;
+    --gov-purple:#5e35b1; --gov-purple-soft:#f0eafc; --gov-purple-border:#d1c4e9;
+    --gov-bg:#f4f6f9; --gov-card:#ffffff; --gov-border:#d6dde6; --gov-border-strong:#b8c4d1;
+    --gov-text:#1a2332; --gov-muted:#5a6a7e; --gov-muted-light:#8896a8;
+    --danger:#dc2626; --danger-bg:#fef2f2;
+    --header-h:4.2rem; --typing-fs:1.4rem; --typing-lh:1.5; --content-width:780px;
+    --test-font:'Poppins', sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ font-size:clamp(15px, 0.9vw, 17px); }
+  body{ font-family:'Poppins',sans-serif; background:var(--gov-bg); color:var(--gov-text); min-height:100vh; overflow-x:hidden; line-height:1.5; }
+  button{ font-family:inherit; cursor:pointer; }
+  input, select, textarea{ font-family:inherit; }
+  a{ color:var(--gov-navy-mid); }
+  .screen{ display:none; }
+  .screen.active{ display:flex; }
+
+  .spin-row td{ text-align:center; padding:2rem 1rem !important; }
+  .spin-wrap{ display:inline-flex; align-items:center; gap:0.6rem; color:var(--gov-muted); font-size:0.85rem; font-weight:500; }
+  .spinner{ width:1.15rem; height:1.15rem; border:0.16rem solid var(--gov-navy-soft); border-top-color:var(--gov-navy); border-radius:50%; animation:spinAnim 0.7s linear infinite; flex-shrink:0; }
+  .spinner.sm{ width:0.9rem; height:0.9rem; border-width:0.13rem; }
+  @keyframes spinAnim{ to{ transform:rotate(360deg); } }
+
+  .mtb-overlay{ position:fixed; inset:0; z-index:9999; background:var(--gov-navy-dark); color:#fff; display:flex; align-items:center; justify-content:center; padding:2rem; text-align:center; }
+  .mtb-box{ max-width:32rem; }
+  .mtb-box h1{ font-size:1.8rem; font-weight:700; margin-bottom:0.8rem; }
+  .mtb-box p{ font-size:0.95rem; line-height:1.7; opacity:0.9; }
+
+  .app-header{
+    position:fixed; top:0; left:0; right:0; height:var(--header-h); z-index:200;
+    background:#fff; border-bottom:0.1875rem solid var(--gov-navy);
+    box-shadow:0 1px 4px rgba(0,35,71,.08);
+    display:flex; align-items:center; justify-content:space-between; padding:0 1.75rem;
+  }
+  .app-header::after{
+    content:""; position:absolute; bottom:-0.1875rem; left:0; right:0; height:0.1875rem;
+    background:linear-gradient(90deg, var(--gov-saffron) 0%, var(--gov-saffron) 33%, #fff 33%, #fff 66%, var(--gov-green) 66%, var(--gov-green) 100%);
+    opacity:0.55;
+  }
+  .brand-wrap{ display:flex; align-items:center; gap:0.85rem; }
+  .brand-emblem{
+    width:2.5rem; height:2.5rem; border-radius:50%;
+    background:linear-gradient(135deg, var(--gov-navy) 0%, var(--gov-navy-mid) 100%);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    box-shadow:0 2px 6px rgba(0,35,71,.25); position:relative;
+  }
+  .brand-emblem::after{ content:""; position:absolute; inset:-0.15rem; border-radius:50%; border:0.125rem solid var(--gov-saffron-light); opacity:0.6; }
+  .brand-emblem svg{ width:1.3rem; height:1.3rem; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .brand-title{ font-size:1.15rem; font-weight:700; color:var(--gov-navy); }
+  .brand-title .brand-accent{ color:var(--gov-saffron); font-weight:800; }
+  .header-actions{ display:flex; align-items:center; gap:0.65rem; }
+  .header-link{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    background:var(--gov-navy); color:#fff; text-decoration:none;
+    font-size:0.78rem; font-weight:600; padding:0.55rem 1rem;
+    border-radius:0.25rem; border:0.0625rem solid var(--gov-navy);
+    transition:all .18s ease; white-space:nowrap;
+  }
+  .header-link .hl-icon{ width:1.1rem; height:1.1rem; border-radius:50%; background:var(--gov-saffron); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .header-link .hl-icon svg{ width:0.65rem; height:0.65rem; fill:#fff; }
+  .header-link:hover{ background:var(--gov-navy-mid); border-color:var(--gov-navy-mid); }
+  .admin-btn{
+    width:2.4rem; height:2.4rem; border-radius:0.3rem;
+    background:var(--gov-saffron-soft); border:0.0625rem solid var(--gov-saffron-light);
+    color:var(--gov-saffron); display:inline-flex; align-items:center; justify-content:center;
+    transition:all .18s ease;
+  }
+  .admin-btn svg{ width:1.05rem; height:1.05rem; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .admin-btn:hover{ background:var(--gov-saffron); color:#fff; border-color:var(--gov-saffron); }
+
+  .app-footer{ background:var(--gov-navy-dark); color:#cbd5e1; padding:1.4rem 1.5rem; text-align:center; border-top:0.25rem solid var(--gov-saffron); margin-top:auto; }
+  .footer-simple{ font-size:0.82rem; font-weight:500; }
+  .footer-simple .heart{ color:#ff5252; margin:0 0.2rem; }
+  .footer-simple strong{ color:#fff; font-weight:600; }
+
+  #homeScreen.active, #testListScreen.active, #resultScreen.active, #editTestScreen.active{
+    display:flex; flex-direction:column; min-height:100vh; padding-top: var(--header-h);
+  }
+
+  .home-main{ flex:1; padding:2.5rem 2rem; display:flex; justify-content:center; align-items:center; background:linear-gradient(180deg, var(--gov-navy-soft) 0%, var(--gov-bg) 12rem); }
+  .home-card{ width:100%; max-width:44rem; background:var(--gov-card); border:0.0625rem solid var(--gov-border); border-radius:0.4rem; box-shadow:0 8px 24px rgba(0,35,71,.14); overflow:hidden; }
+  .home-card-head{ background:linear-gradient(90deg, var(--gov-navy) 0%, var(--gov-navy-mid) 100%); color:#fff; padding:1.3rem 1.75rem; border-bottom:0.1875rem solid var(--gov-saffron); text-align:center; }
+  .home-card-head h2{ font-size:1.15rem; font-weight:600; }
+  .home-card-head p{ font-size:0.78rem; opacity:0.85; margin-top:0.3rem; font-weight:400; }
+  .home-card-body{ padding:2rem 1.75rem; }
+  .lang-pick-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .lang-pick{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem;
+    padding:2rem 1rem; background:#fff; border:0.09375rem solid var(--gov-border);
+    border-radius:0.4rem; transition:all .18s ease; font-size:1.05rem; font-weight:700; color:var(--gov-navy);
+    border-top:0.25rem solid var(--gov-navy); cursor:pointer;
+  }
+  .lang-pick:hover{ border-color:var(--gov-saffron); background:var(--gov-saffron-soft); color:var(--gov-saffron); transform:translateY(-2px); box-shadow:0 6px 18px rgba(230,115,0,.15); }
+  .lang-pick .lp-emoji{ font-size:2rem; }
+  .lang-pick .lp-sub{ font-size:0.72rem; font-weight:500; color:var(--gov-muted); }
+  .lang-pick:hover .lp-sub{ color:var(--gov-saffron); }
+
+  .page-main{ flex:1; padding:2rem 2rem 2.5rem; display:flex; justify-content:center; align-items:flex-start; }
+  .page-card{ width:100%; max-width:80rem; background:var(--gov-card); border:0.0625rem solid var(--gov-border); border-radius:0.4rem; box-shadow:0 2px 8px rgba(0,35,71,.10); overflow:hidden; }
+  .page-card-head{ background:linear-gradient(90deg, var(--gov-navy) 0%, var(--gov-navy-mid) 100%); color:#fff; padding:1.1rem 1.75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; border-bottom:0.1875rem solid var(--gov-saffron); }
+  .page-card-head-left{ display:flex; align-items:center; gap:0.85rem; }
+  .page-card-head-icon{ width:2.3rem; height:2.3rem; border-radius:0.3rem; background:rgba(255,255,255,0.15); border:0.0625rem solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .page-card-head-icon svg{ width:1.15rem; height:1.15rem; fill:none; stroke:#fff; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .page-card-head h2{ font-size:1.05rem; font-weight:600; }
+  .page-card-head p{ font-size:0.75rem; opacity:0.85; margin-top:0.1rem; font-weight:400; }
+  .list-back-btn{ display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:#fff; background:rgba(255,255,255,0.15); border:0.0625rem solid rgba(255,255,255,0.4); border-radius:0.25rem; padding:0.5rem 0.9rem; transition:all .18s ease; }
+  .list-back-btn:hover{ background:rgba(255,255,255,0.25); }
+  .list-back-btn svg{ width:0.75rem; height:0.75rem; }
+  .page-card-body{ padding:1.5rem 1.75rem 1.75rem; }
+
+  .test-table{ width:100%; border-collapse:separate; border-spacing:0; font-size:0.85rem; }
+  .test-table thead th{ text-align:left; font-size:0.68rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#fff; background:var(--gov-navy); padding:0.75rem 0.7rem; white-space:nowrap; border-right:0.0625rem solid rgba(255,255,255,0.1); }
+  .test-table thead th:last-child{ border-right:none; }
+  .test-table thead th.c-head{ text-align:center; }
+  .test-table thead th.sticky-col{ text-align:center; z-index:3; box-shadow:-0.25rem 0 0.5rem rgba(0,0,0,0.08); }
+  .test-table tbody td{ padding:0.85rem 0.7rem; border-bottom:0.0625rem solid var(--gov-border); vertical-align:middle; background:#fff; }
+  .test-table tbody tr:nth-child(even) td{ background:#fafbfc; }
+  .test-table tbody tr:hover td{ background:var(--gov-navy-soft); }
+  .test-table tbody td.sticky-col{ text-align:center; box-shadow:-0.25rem 0 0.5rem rgba(0,0,0,0.06); }
+  .test-table .sno{ font-weight:700; color:var(--gov-navy); width:3rem; text-align:center; }
+  .test-table .title-cell{ font-weight:600; text-align:left; }
+  .test-table .center-cell{ text-align:center; }
+  .test-table .num-cell{ text-align:center; font-weight:600; color:var(--gov-navy); font-variant-numeric:tabular-nums; }
+  .test-table .empty-row td{ text-align:center; color:var(--gov-muted); padding:3rem 1rem; font-size:0.88rem; }
+
+  .sticky-col{ position:sticky; right:0; z-index:2; }
+
+  .truncate{ max-width:18rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle; }
+  .truncate-sm{ max-width:12rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle; }
+
+  .start-btn-row{ display:inline-flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; color:#fff; background:var(--gov-green); border:none; border-radius:0.3rem; padding:0.7rem 1.4rem; transition:all .18s ease; box-shadow:0 3px 8px rgba(19,136,8,.3); min-width:6.5rem; justify-content:center; }
+  .start-btn-row:hover{ background:var(--gov-green-dark); transform:translateY(-1px); box-shadow:0 5px 12px rgba(19,136,8,.4); }
+  .start-btn-row svg{ width:0.8rem; height:0.8rem; fill:currentColor; }
+
+  /* PAGINATION */
+  .pagination{
+    display:flex; justify-content:center; align-items:center;
+    gap:0.35rem; margin-top:1.5rem; padding-top:1.25rem;
+    border-top:0.0625rem solid var(--gov-border);
+    flex-wrap:wrap;
+  }
+  .pagination-btn{
+    min-width:2.2rem; height:2.2rem; padding:0 0.7rem;
+    border-radius:0.25rem; border:0.0625rem solid var(--gov-border-strong);
+    background:#fff; color:var(--gov-navy);
+    font-size:0.82rem; font-weight:600;
+    transition:all .15s ease;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family:inherit; cursor:pointer;
+  }
+  .pagination-btn:hover:not(:disabled):not(.active){ background:var(--gov-navy-soft); border-color:var(--gov-navy); }
+  .pagination-btn.active{ background:var(--gov-navy); color:#fff; border-color:var(--gov-navy); }
+  .pagination-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .pagination-dots{ color:var(--gov-muted); font-weight:700; padding:0 0.15rem; user-select:none; }
+  .pagination-info{ font-size:0.75rem; color:var(--gov-muted); margin-left:0.7rem; font-weight:500; font-variant-numeric:tabular-nums; }
+
+  /* TYPING SCREEN */
+  #typingScreen.active{ display:flex; flex-direction:column; height:100vh; width:100vw; overflow:hidden; background:#fcfdff; }
+  .typing-main{
+    flex:1; display:flex; flex-direction:column;
+    padding:0.75rem 1.5rem 1.25rem;
+    gap:0.6rem; min-width:0; overflow:hidden;
+    background:#fcfdff; position:relative; align-items:center;
+  }
+  .timer-line{ display:flex; align-items:center; justify-content:center; padding:0.3rem 1rem 0; flex-shrink:0; font-size:1rem; color:#0f172a; }
+  .timer-line .timer-label{ font-weight:500; }
+  .timer-line .timer-value{ font-weight:700; font-size:1.15rem; letter-spacing:0.12em; color:#0f172a; font-variant-numeric:tabular-nums; min-width:4.4rem; text-align:left; margin-left:0.5rem; }
+  .timer-line .timer-value.warn{ color:#dc2626; animation:pulse 1s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.55; } }
+  /* Passage box grows to fill extra space (was 2.6) */
+  .passage-box{
+    flex:3.6; min-height:0; background:#fff; color:#000;
+    border:0.0625rem solid #000; padding:1rem 1.25rem;
+    overflow-y:auto;
+    font-family:var(--test-font, 'Poppins', sans-serif);
+    font-size:var(--typing-fs, 1.4rem);
+    line-height:var(--typing-lh, 1.5);
+    white-space:pre-wrap; word-break:normal; overflow-wrap:normal; hyphens:none;
+    caret-color:transparent; user-select:none; cursor:default; font-weight:400;
+    border-radius:0.15rem;
+    width:100%; max-width:var(--content-width, 780px);
+    text-shadow:none;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+  /* Typing box same absolute height as before (was 1.15) */
+  .typing-box{
+    flex:0.85; min-height:0; background:#fff;
+    border:0.0625rem solid #000; padding:1rem 1.25rem;
+    display:flex; overflow:hidden; position:relative;
+    border-radius:0.15rem;
+    width:100%; max-width:var(--content-width, 780px);
+  }
+  .typing-box textarea{
+    width:100%; height:100%; border:none; outline:none; resize:none;
+    background:transparent; color:#000;
+    font-family:var(--test-font, 'Poppins', sans-serif);
+    font-size:var(--typing-fs, 1.4rem);
+    line-height:var(--typing-lh, 1.5);
+    overflow:hidden; caret-color:#000; padding-bottom:1.6rem; font-weight:400;
+    text-shadow:none;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+  .typing-box textarea::placeholder{ color:#94a3b8; font-weight:400; }
+  .typing-box textarea::selection{ background:#cfe8ff; }
+
+  /* FLOATING PILLS */
+  .floating-actions,
+  .floating-font-ctrl{
+    position:fixed; bottom:1.5rem; z-index:300;
+    display:flex; flex-direction:column; align-items:center;
+    background:#fff; border:0.0625rem solid var(--gov-border);
+    border-radius:2rem;
+    padding:0.55rem 0.45rem;
+    gap:0.4rem;
+    box-shadow:0 4px 14px rgba(0,35,71,0.18);
+    min-width:3.1rem;
+    min-height:7.4rem;
+    justify-content:space-around;
+  }
+  .floating-actions{ right:1.5rem; }
+  .floating-font-ctrl{ left:1.5rem; }
+
+  .float-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    color:#fff; border:none; border-radius:50%;
+    width:2.2rem; height:2.2rem; padding:0;
+    transition:all .18s ease;
+    position:relative;
+    flex-shrink:0;
+  }
+  .float-btn svg{ width:1.15rem; height:1.15rem; flex-shrink:0; }
+  .float-btn .float-tip{
+    position:absolute; right:calc(100% + 0.75rem); top:50%; transform:translateY(-50%);
+    background:rgba(0,35,71,0.92); color:#fff; font-size:0.68rem; font-weight:600;
+    padding:0.3rem 0.6rem; border-radius:0.2rem; white-space:nowrap;
+    opacity:0; pointer-events:none; transition:opacity .15s ease;
+  }
+  .float-btn:hover .float-tip{ opacity:1; }
+  .float-btn.fullscreen{ background:var(--gov-navy); }
+  .float-btn.fullscreen:hover:not(:disabled){ background:var(--gov-navy-mid); }
+  .float-btn.fullscreen:disabled{ opacity:0.45; cursor:not-allowed; }
+  .float-btn.submit{ background:var(--gov-saffron); }
+  .float-btn.submit:hover{ background:#cc6600; }
+
+  .font-ctrl-btn{
+    width:2.2rem; height:2.2rem; border-radius:50%;
+    background:var(--gov-navy-soft); border:0.0625rem solid var(--gov-border);
+    color:var(--gov-navy); display:inline-flex; align-items:center; justify-content:center;
+    font-size:1.15rem; font-weight:700; transition:all .15s ease; padding:0; line-height:1;
+    flex-shrink:0;
+  }
+  .font-ctrl-btn:hover{ background:var(--gov-navy); color:#fff; border-color:var(--gov-navy); }
+  .font-ctrl-val{
+    font-size:0.68rem; font-weight:700; color:var(--gov-muted);
+    min-width:1.9rem; text-align:center; user-select:none;
+    font-variant-numeric:tabular-nums;
+    height:1rem; line-height:1rem; display:inline-flex; align-items:center; justify-content:center;
+  }
+
+  /* RESULT */
+  .result-main{ flex:1; padding:2rem 2rem 2.5rem; display:flex; justify-content:center; align-items:flex-start; background:linear-gradient(180deg, var(--gov-navy-soft) 0%, var(--gov-bg) 10rem); }
+  .result-card{ width:100%; max-width:78rem; background:var(--gov-card); border:0.0625rem solid var(--gov-border); border-radius:0.4rem; box-shadow:0 8px 24px rgba(0,35,71,.14); overflow:hidden; }
+  .result-header{ background:var(--gov-navy); color:#fff; padding:1.75rem 2rem 1.5rem; text-align:center; border-bottom:0.25rem solid var(--gov-saffron); }
+  .result-title{ font-size:1.5rem; font-weight:700; }
+  .result-sub{ font-size:0.82rem; color:rgba(255,255,255,0.85); margin-top:0.3rem; }
+  .result-stats{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; padding:1.75rem 2rem 0.85rem; }
+  .stat-card{ background:#fff; border:0.0625rem solid var(--gov-border); border-top:0.25rem solid var(--gov-navy); border-radius:0.35rem; padding:1.15rem 1rem 1.1rem; text-align:center; }
+  .stat-card.marks-card{ border-top-color:var(--gov-saffron); }
+  .stat-card.green-card{ border-top-color:var(--gov-green); }
+  .stat-card.blue-card{ border-top-color:#0277bd; }
+  .stat-label{ font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gov-muted); margin-bottom:0.4rem; }
+  .stat-value{ font-size:1.55rem; font-weight:700; color:var(--gov-navy); line-height:1.1; font-variant-numeric:tabular-nums; }
+  .stat-value span{ font-size:0.85rem; font-weight:600; color:var(--gov-muted); margin-left:0.1rem; }
+  .stat-sub{ font-size:0.68rem; color:var(--gov-muted); margin-top:0.3rem; }
+  .stat-badge{ display:inline-block; margin-top:0.55rem; font-size:0.62rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:0.22rem 0.7rem; border-radius:0.25rem; background:#f1f5f9; color:var(--gov-muted); border:0.0625rem solid var(--gov-border); }
+  .stat-badge.good{ background:var(--gov-green-soft); color:var(--gov-green-dark); border-color:#a7dba3; }
+  .stat-badge.mid{ background:#fff4e6; color:#b45309; border-color:#fed7aa; }
+  .stat-badge.low{ background:var(--danger-bg); color:var(--danger); border-color:#f5b7b7; }
+  .result-tables{ display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; padding:0.85rem 2rem 0; margin-bottom:1.4rem; }
+  .result-table-block{ background:#fff; border:0.0625rem solid var(--gov-border-strong); border-radius:0.35rem; overflow:hidden; }
+  .rtb-title{ font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#fff; background:var(--gov-navy); padding:0.75rem 1.15rem; }
+
+  .info-table{ width:100%; border-collapse:collapse; font-size:0.85rem; }
+  .info-table tbody tr{ border-bottom:0.0625rem solid var(--gov-border); }
+  .info-table tbody tr:last-child{ border-bottom:none; }
+  .info-table tbody tr:nth-child(even){ background:#fafbfc; }
+  .info-table tbody th{
+    text-align:left; font-size:0.82rem; font-weight:500; color:var(--gov-muted);
+    padding:0.75rem 1rem; width:56%; vertical-align:middle;
+    border-right:0.0625rem solid var(--gov-border);
+  }
+  .info-table tbody td{
+    font-size:0.88rem; font-weight:600; color:var(--gov-text);
+    padding:0.75rem 1rem; vertical-align:middle; text-align:right;
+    word-break:break-word;
+  }
+
+  .result-review{ padding:0 2rem; }
+  .comp-title{ font-size:0.95rem; font-weight:700; color:var(--gov-navy); margin-bottom:0.65rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; padding-bottom:0.55rem; border-bottom:0.125rem solid var(--gov-border); }
+  .comp-legend{ display:flex; gap:0.85rem; flex-wrap:wrap; }
+  .comp-legend span{ display:inline-flex; align-items:center; gap:0.35rem; font-size:0.7rem; font-weight:600; color:var(--gov-muted); }
+  .lg-dot{ width:0.6rem; height:0.6rem; border-radius:0.15rem; display:inline-block; }
+  .lg-dot.correct{ background:var(--gov-green); }
+  .lg-dot.wrong{ background:var(--danger); }
+  .lg-dot.missed{ background:var(--gov-muted); }
+  .comp-box{ background:#fff; border:0.09375rem solid var(--gov-border-strong); border-radius:0.3rem; padding:1.15rem 1.35rem; max-height:24rem; overflow-y:auto; font-family:var(--test-font,'Poppins',sans-serif); font-size:var(--typing-fs,1.4rem); line-height:var(--typing-lh,1.5); color:var(--gov-text); font-weight:400; }
+  .cw{ display:inline; padding:0; margin:0; font-weight:400; }
+  .cw.correct{ color:var(--gov-green); font-weight:500; }
+  .cw.wrong{ color:var(--danger); font-weight:500; }
+  .cw.wrong .cw-arrow{ color:var(--gov-muted-light); margin:0 0.28em; }
+  .cw.wrong .cw-good{ color:#0277bd; font-weight:600; }
+  .cw.missed{ color:var(--gov-muted); border-bottom:0.125rem dotted var(--gov-muted-light); }
+  .result-actions{ margin:1.6rem 2rem 0; padding-top:1.4rem; border-top:0.0625rem dashed var(--gov-border); display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap; }
+
+  /* EDIT TEST */
+  .edit-main{ flex:1; padding:2rem 2rem 2.5rem; display:flex; justify-content:center; align-items:flex-start; background:linear-gradient(180deg, var(--gov-navy-soft) 0%, var(--gov-bg) 10rem); }
+  .edit-card{ width:100%; max-width:64rem; background:var(--gov-card); border:0.0625rem solid var(--gov-border); border-radius:0.4rem; box-shadow:0 8px 24px rgba(0,35,71,.14); overflow:hidden; }
+  .edit-card-head{ background:linear-gradient(90deg, var(--gov-navy) 0%, var(--gov-navy-mid) 100%); color:#fff; padding:1.1rem 1.75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; border-bottom:0.1875rem solid var(--gov-saffron); }
+  .edit-card-head-left{ display:flex; align-items:center; gap:0.85rem; }
+  .edit-card-head-icon{ width:2.3rem; height:2.3rem; border-radius:0.3rem; background:rgba(255,255,255,0.15); border:0.0625rem solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .edit-card-head-icon svg{ width:1.15rem; height:1.15rem; fill:none; stroke:#fff; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .edit-card-head h2{ font-size:1.05rem; font-weight:600; }
+  .edit-card-head p{ font-size:0.75rem; opacity:0.85; margin-top:0.1rem; font-weight:400; }
+  .edit-card-body{ padding:1.75rem 2rem 2rem; }
+  .edit-content-textarea{
+    width:100%; min-height:22rem;
+    color:var(--gov-text); background:#fff;
+    border:0.09375rem solid var(--gov-border-strong);
+    border-radius:0.3rem; padding:1.1rem 1.25rem; outline:none; resize:vertical;
+    font-family:var(--edit-test-font, 'Poppins', sans-serif);
+    font-size:var(--edit-test-fs, 1.4rem);
+    line-height:var(--edit-test-lh, 1.5);
+  }
+  .edit-content-textarea:focus{ border-color:var(--gov-navy-mid); box-shadow:0 0 0 0.1875rem rgba(10,74,143,.14); }
+  .edit-actions-row{ margin-top:1.5rem; padding-top:1.4rem; border-top:0.0625rem dashed var(--gov-border); display:flex; justify-content:flex-end; gap:0.75rem; flex-wrap:wrap; }
+
+  /* ADMIN */
+  #adminDashboard.active{ display:flex; flex-direction:column; min-height:100vh; background:var(--gov-bg); }
+  .admin-header{ position:sticky; top:0; z-index:200; height:4.25rem; background:var(--gov-navy); color:#fff; border-bottom:0.25rem solid var(--gov-saffron); display:flex; align-items:center; justify-content:space-between; padding:0 1.75rem; }
+  .admin-header-left{ display:flex; align-items:center; gap:0.85rem; }
+  .admin-header-right{ display:flex; align-items:center; gap:0.65rem; }
+  .admin-badge{ font-size:0.65rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--gov-navy); background:var(--gov-saffron-light); padding:0.3rem 0.75rem; border-radius:0.25rem; }
+  .admin-header-title{ font-size:1rem; font-weight:600; color:#fff; }
+  .admin-user-email{ font-size:0.72rem; color:rgba(255,255,255,0.75); }
+  .logout-btn{ display:inline-flex; align-items:center; gap:0.5rem; font-size:0.78rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#fff; background:rgba(255,255,255,0.12); border:0.0625rem solid rgba(255,255,255,0.35); border-radius:0.25rem; padding:0.55rem 1.05rem; transition:all .18s ease; }
+  .logout-btn:hover{ background:rgba(255,255,255,0.22); }
+  .admin-body{ flex:1; display:grid; grid-template-columns:16rem 1fr; }
+  .admin-sidebar{ background:#fff; border-right:0.0625rem solid var(--gov-border); padding:1.35rem 0.85rem; display:flex; flex-direction:column; gap:0.3rem; position:sticky; top:4.25rem; align-self:start; height:calc(100vh - 4.25rem); overflow-y:auto; }
+  .sidebar-heading{ font-size:0.65rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--gov-muted); padding:0 0.8rem 0.65rem; border-bottom:0.0625rem solid var(--gov-border); margin-bottom:0.5rem; }
+  .tab-btn{ display:flex; align-items:center; gap:0.75rem; width:100%; text-align:left; padding:0.75rem 0.9rem; background:transparent; border:none; border-radius:0.3rem; font-size:0.85rem; font-weight:500; color:var(--gov-text); transition:all .15s ease; border-left:0.25rem solid transparent; }
+  .tab-btn svg{ width:1.05rem; height:1.05rem; stroke:currentColor; stroke-width:1.9; fill:none; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+  .tab-btn:hover{ background:var(--gov-navy-soft); color:var(--gov-navy); }
+  .tab-btn.active{ background:var(--gov-navy-soft); color:var(--gov-navy); border-left-color:var(--gov-saffron); font-weight:600; }
+  .admin-content{ padding:1.75rem 2rem 3rem; overflow-x:hidden; min-width:0; }
+  .tab-pane{ display:none; }
+  .tab-pane.active{ display:block; }
+  .pane-title{ font-size:1.3rem; font-weight:700; color:var(--gov-navy); }
+  .pane-sub{ margin-top:0.3rem; font-size:0.85rem; color:var(--gov-muted); }
+  .panel{ background:#fff; border:0.0625rem solid var(--gov-border); border-radius:0.35rem; box-shadow:0 1px 3px rgba(0,35,71,.06); padding:1.5rem 1.65rem 1.65rem; margin-top:1.4rem; }
+  .panel-title{ font-size:0.98rem; font-weight:600; color:var(--gov-navy); margin-bottom:1.1rem; display:flex; align-items:center; gap:0.55rem; padding-bottom:0.8rem; border-bottom:0.0625rem solid var(--gov-border); position:relative; }
+  .panel-title::before{ content:""; position:absolute; bottom:-0.0625rem; left:0; width:3rem; height:0.125rem; background:var(--gov-saffron); }
+  .panel-title svg{ width:1rem; height:1rem; stroke:var(--gov-navy); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .form-grid.full{ grid-template-columns:1fr; }
+  .form-field{ display:flex; flex-direction:column; }
+  .form-field.span2{ grid-column:1 / -1; }
+  .form-field label{ font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--gov-muted); margin-bottom:0.4rem; }
+  .form-field input[type="text"],.form-field select,.form-field textarea{ font-size:0.9rem; color:var(--gov-text); background:#fff; border:0.0625rem solid var(--gov-border-strong); border-radius:0.25rem; padding:0.7rem 0.9rem; outline:none; transition:all .18s ease; }
+  .form-field input:focus,.form-field select:focus{ border-color:var(--gov-navy-mid); box-shadow:0 0 0 0.1875rem rgba(10,74,143,.14); }
+  .form-field input[type="file"]{ font-size:0.85rem; background:#f8fafc; border:0.09375rem dashed var(--gov-navy-mid); border-radius:0.25rem; padding:0.8rem 0.95rem; cursor:pointer; }
+
+  .action-row{ margin-top:1.3rem; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+  .btn-action{ display:inline-flex; align-items:center; gap:0.55rem; font-size:0.8rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#fff; background:var(--gov-navy); border:0.0625rem solid var(--gov-navy); border-radius:0.25rem; padding:0.75rem 1.4rem; transition:all .18s ease; }
+  .btn-action:hover{ background:var(--gov-navy-mid); border-color:var(--gov-navy-mid); }
+  .btn-action.orange{ background:var(--gov-saffron); border-color:var(--gov-saffron); }
+  .btn-action.orange:hover{ background:#cc6600; }
+  .btn-action:disabled{ opacity:0.55; cursor:not-allowed; }
+  .btn-action svg{ width:0.9rem; height:0.9rem; }
+  .btn-action .spinner{ border-color:rgba(255,255,255,0.4); border-top-color:#fff; }
+
+  .lang-choice-group{ display:flex; gap:0.75rem; flex-wrap:wrap; }
+  .lang-choice{ display:inline-flex; align-items:center; gap:0.6rem; padding:0.75rem 1.15rem; background:#fff; border:0.09375rem solid var(--gov-border); border-radius:0.25rem; user-select:none; transition:all .18s ease; }
+  .lang-choice:hover{ border-color:var(--gov-navy-mid); background:#f8fafc; }
+  .lang-choice input{ display:none; }
+  .lang-choice .lbox{ width:1.1rem; height:1.1rem; border-radius:50%; border:0.125rem solid var(--gov-border-strong); background:#fff; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
+  .lang-choice .lbox::after{ content:""; width:0.45rem; height:0.45rem; border-radius:50%; background:#fff; opacity:0; }
+  .lang-choice input:checked + .lbox{ background:var(--gov-navy); border-color:var(--gov-navy); }
+  .lang-choice input:checked + .lbox::after{ opacity:1; }
+  .lang-choice.is-selected{ border-color:var(--gov-navy); background:var(--gov-navy-soft); }
+  .lang-choice .lname{ font-size:0.9rem; font-weight:600; color:var(--gov-navy); }
+
+  .hidden-step{ display:none; }
+  .hidden-step.show{ display:block; }
+
+  .data-table{ width:100%; border-collapse:separate; border-spacing:0; font-size:0.85rem; }
+  .data-table thead th{ text-align:left; font-size:0.68rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:#fff; background:var(--gov-navy); padding:0.7rem 0.8rem; white-space:nowrap; border-right:0.0625rem solid rgba(255,255,255,0.08); }
+  .data-table thead th:last-child{ border-right:none; }
+  .data-table tbody td{ padding:0.75rem 0.8rem; font-size:0.82rem; border-bottom:0.0625rem solid var(--gov-border); vertical-align:middle; color:var(--gov-text); background:#fff; }
+  .data-table tbody tr:nth-child(even) td{ background:#fafbfc; }
+  .data-table tbody tr:hover td{ background:var(--gov-navy-soft); }
+  .data-table .empty-row td{ text-align:center; color:var(--gov-muted); padding:2.5rem 1rem; font-style:italic; font-size:0.85rem; }
+
+  .badge{ display:inline-block; font-size:0.65rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:0.22rem 0.55rem; border-radius:0.2rem; }
+  .badge.hindi{ background:var(--gov-saffron-soft); color:var(--gov-saffron); }
+  .badge.english{ background:var(--gov-navy-soft); color:var(--gov-navy); }
+
+  .row-actions{ display:flex; gap:0.35rem; justify-content:center; }
+  .icon-btn{ width:1.9rem; height:1.9rem; border-radius:0.2rem; display:inline-flex; align-items:center; justify-content:center; background:#fff; border:0.0625rem solid var(--gov-border); cursor:pointer; transition:all .15s ease; }
+  .icon-btn svg{ width:0.85rem; height:0.85rem; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .icon-btn.del{ color:var(--danger); }
+  .icon-btn.del:hover{ background:var(--danger-bg); border-color:#f5b7b7; }
+  .icon-btn.view{ color:var(--gov-navy); }
+  .icon-btn.view:hover{ background:var(--gov-navy-soft); border-color:#b8c8db; }
+  .icon-btn.edit{ color:var(--gov-green-dark); }
+  .icon-btn.edit:hover{ background:var(--gov-green-soft); border-color:#a7dba3; }
+
+  .live-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+  .live-toolbar-left{ display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; }
+  .live-toolbar-right{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+  .live-toolbar .toolbar-label{ font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--gov-muted); }
+  .live-hint{ font-size:0.75rem; color:var(--gov-muted); }
+  .live-hint.warn{ color:var(--gov-saffron); font-weight:600; }
+  .word-counter{ display:inline-flex; align-items:center; gap:0.4rem; font-size:0.78rem; font-weight:600; color:var(--gov-navy); background:var(--gov-navy-soft); border:0.0625rem solid #b8c8db; border-radius:2rem; padding:0.35rem 0.85rem; }
+  .word-counter.keystroke{ background:var(--gov-saffron-soft); border-color:#ffd9a8; color:var(--gov-saffron); }
+  .word-counter .wc-num{ font-size:0.95rem; font-weight:700; color:var(--gov-saffron); }
+  .live-textarea{ width:100%; min-height:15rem; color:var(--gov-text); background:#fff; border:0.0625rem solid var(--gov-border-strong); border-radius:0.3rem; padding:1.1rem 1.25rem; outline:none; resize:vertical; font-size:var(--typing-fs,1.4rem); line-height:var(--typing-lh,1.5); }
+  .live-textarea:focus{ border-color:var(--gov-navy-mid); box-shadow:0 0 0 0.1875rem rgba(10,74,143,.14); }
+
+  .preview-content{ font-size:0.95rem; line-height:1.9; color:var(--gov-text); background:#f8fafc; border:0.0625rem solid var(--gov-border); border-radius:0.3rem; padding:1.1rem 1.25rem; max-height:24rem; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+
+  .settings-lang-block{ border:0.0625rem solid var(--gov-border); border-radius:0.35rem; padding:1.15rem 1.3rem; background:#fafbfc; }
+  .settings-lang-block + .settings-lang-block{ margin-top:1.15rem; }
+  .settings-lang-head{ display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:0.0625rem dashed var(--gov-border); }
+  .settings-lang-head .sl-dot{ width:0.55rem; height:0.55rem; border-radius:50%; background:var(--gov-saffron); }
+  .settings-lang-head .sl-title{ font-size:0.92rem; font-weight:700; color:var(--gov-navy); }
+  .settings-lang-head .sl-hint{ font-size:0.72rem; color:var(--gov-muted); margin-left:auto; font-style:italic; }
+  .settings-preview{ margin-top:1rem; background:#fff; border:0.09375rem solid var(--gov-navy); border-radius:0.3rem; padding:0.9rem 1.1rem; color:var(--gov-text); min-height:5rem; white-space:pre-wrap; line-height:var(--typing-lh,1.5); font-size:var(--typing-fs,1.4rem); max-width:var(--content-width, 780px); }
+
+  /* MODALS */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(0,35,71,0.65); display:none; align-items:center; justify-content:center; z-index:500; padding:2rem; backdrop-filter:blur(2px); }
+  .modal-overlay.open{ display:flex; }
+  .modal-card{ width:100%; max-width:26rem; background:#fff; border-radius:0.4rem; border:0.0625rem solid var(--gov-border); box-shadow:0 20px 60px rgba(0,35,71,.4); overflow:hidden; max-height:90vh; display:flex; flex-direction:column; }
+  .modal-card-head{ background:linear-gradient(90deg, var(--gov-navy) 0%, var(--gov-navy-mid) 100%); color:#fff; padding:1.1rem 1.5rem; display:flex; align-items:center; gap:0.7rem; border-bottom:0.1875rem solid var(--gov-saffron); flex-shrink:0; }
+  .modal-card.warn .modal-card-head{ background:var(--danger); border-bottom-color:#ff8a80; }
+  .modal-card-head .mc-icon{ width:2rem; height:2rem; border-radius:50%; background:rgba(255,255,255,0.15); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .modal-card-head .mc-icon svg{ width:1rem; height:1rem; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .modal-card-head h3{ font-size:1rem; font-weight:600; }
+  .modal-card-body{ padding:1.5rem 1.6rem 1.5rem; overflow-y:auto; }
+
+  .field{ display:block; margin-bottom:1rem; }
+  .field span{ display:block; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--gov-muted); margin-bottom:0.4rem; }
+  .field input{ width:100%; font-size:0.92rem; color:var(--gov-text); background:#fff; border:0.09375rem solid var(--gov-border-strong); border-radius:0.25rem; padding:0.7rem 0.9rem; outline:none; transition:all .18s ease; }
+  .field input:focus{ border-color:var(--gov-navy-mid); box-shadow:0 0 0 0.1875rem rgba(10,74,143,.14); }
+  .pwd-wrap{ position:relative; }
+  .pwd-wrap input{ padding-right:2.6rem; }
+  .pwd-toggle{ position:absolute; right:0.4rem; top:50%; transform:translateY(-50%); width:1.9rem; height:1.9rem; border-radius:0.2rem; background:transparent; border:none; color:var(--gov-muted); display:flex; align-items:center; justify-content:center; transition:all .15s ease; }
+  .pwd-toggle:hover{ color:var(--gov-navy); background:var(--gov-navy-soft); }
+  .pwd-toggle svg{ width:1rem; height:1rem; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .pwd-toggle .icon-eye-off{ display:none; }
+  .pwd-toggle.showing .icon-eye{ display:none; }
+  .pwd-toggle.showing .icon-eye-off{ display:block; }
+
+  .modal-msg{ font-size:0.8rem; font-weight:500; padding:0.55rem 0.85rem; border-radius:0.25rem; margin-bottom:1rem; display:none; }
+  .modal-msg.show{ display:block; }
+  .modal-msg.err{ background:var(--danger-bg); color:var(--danger); border:0.0625rem solid #f5b7b7; border-left:0.25rem solid var(--danger); }
+  .modal-msg.ok{ background:var(--gov-green-soft); color:var(--gov-green-dark); border:0.0625rem solid #a7dba3; border-left:0.25rem solid var(--gov-green); }
+  .confirm-text{ font-size:0.88rem; color:var(--gov-text); line-height:1.65; }
+  .confirm-text strong{ color:var(--gov-navy); font-weight:700; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.4rem; padding-top:1.1rem; border-top:0.0625rem dashed var(--gov-border); }
+
+  .bilingual-msg{ display:flex; flex-direction:column; gap:0.9rem; }
+  .bi-block{
+    padding:0.9rem 1.1rem;
+    border-radius:0.35rem;
+    background:#f8fafc;
+    border:0.0625rem solid var(--gov-border);
+    border-left:0.25rem solid var(--gov-saffron);
+  }
+  .bi-block:last-child{ border-left-color:var(--gov-navy); }
+  .bi-lang{
+    font-size:0.62rem; font-weight:700; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--gov-muted);
+    margin-bottom:0.4rem;
+  }
+  .bi-text{
+    font-size:0.88rem; line-height:1.75;
+    color:var(--gov-text);
+    text-align:justify;
+    text-justify:inter-word;
+    hyphens:auto;
+    word-spacing:0.05em;
+  }
+
+  .btn-ghost{ font-size:0.8rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--gov-navy); background:#fff; border:0.0625rem solid var(--gov-border-strong); border-radius:0.25rem; padding:0.65rem 1.15rem; transition:all .15s ease; }
+  .btn-ghost:hover{ background:#f1f5f9; border-color:var(--gov-navy); }
+  .btn-primary{ font-size:0.8rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#fff; background:var(--gov-navy); border:0.0625rem solid var(--gov-navy); border-radius:0.25rem; padding:0.65rem 1.35rem; display:inline-flex; align-items:center; gap:0.4rem; justify-content:center; transition:all .18s ease; }
+  .btn-primary:hover:not(:disabled){ background:var(--gov-navy-mid); border-color:var(--gov-navy-mid); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-primary .spinner{ border-color:rgba(255,255,255,0.4); border-top-color:#fff; }
+  .btn-danger{ font-size:0.8rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#fff; background:var(--danger); border:0.0625rem solid var(--danger); border-radius:0.25rem; padding:0.65rem 1.35rem; transition:all .18s ease; }
+  .btn-danger:hover{ background:#8b0000; border-color:#8b0000; }
+
+  .toast{ position:fixed; top:calc(var(--header-h) + 1.5rem); right:1.5rem; z-index:900; background:#fff; border:0.0625rem solid #a7dba3; border-left:0.3rem solid var(--gov-green); color:var(--gov-green-dark); font-size:0.83rem; font-weight:600; padding:0.85rem 1.1rem; border-radius:0.3rem; box-shadow:0 8px 24px rgba(0,35,71,.18); display:none; align-items:center; gap:0.55rem; max-width:24rem; }
+  .toast.show{ display:flex; }
+  .toast.warn{ border-left-color:var(--danger); border-color:#f5b7b7; color:var(--danger); }
+  .toast .tick{ width:1.15rem; height:1.15rem; border-radius:50%; background:var(--gov-green); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; flex-shrink:0; }
+  .toast.warn .tick{ background:var(--danger); }
+
+  .loading-ov{ position:fixed; inset:0; z-index:1000; background:rgba(0,35,71,0.7); display:none; align-items:center; justify-content:center; color:#fff; font-size:0.95rem; font-weight:600; backdrop-filter:blur(3px); }
+  .loading-ov.show{ display:flex; }
+  .loading-ov .spinner{ border-color:rgba(255,255,255,0.3); border-top-color:var(--gov-saffron-light); width:1.6rem; height:1.6rem; border-width:0.2rem; margin-right:0.8rem; }
+
+  @media (max-width: 800px){
+    .result-stats{ grid-template-columns:repeat(2, 1fr); }
+    .result-tables{ grid-template-columns:1fr; }
+    .admin-body{ grid-template-columns:1fr; }
+    .admin-sidebar{ position:static; height:auto; }
+    .lang-pick-grid{ grid-template-columns:1fr; }
+    .typing-main{ padding:0.7rem 0.85rem 4rem; gap:0.5rem; }
+    .passage-box{ flex:3.0; }
+    .typing-box{ flex:1.0; }
+    .floating-actions{ bottom:1rem; right:0.85rem; padding:0.5rem 0.4rem; min-height:6.8rem; }
+    .floating-font-ctrl{ bottom:1rem; left:0.85rem; padding:0.5rem 0.4rem; min-height:6.8rem; }
+    .float-btn{ width:2rem; height:2rem; }
+    .float-btn svg{ width:1rem; height:1rem; }
+    .font-ctrl-btn{ width:2rem; height:2rem; font-size:1rem; }
+    .font-ctrl-val{ font-size:0.62rem; min-width:1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HOME -->
+  <main id="homeScreen" class="screen active">
+    <header class="app-header">
+      <div class="brand-wrap">
+        <div class="brand-emblem"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></div>
+        <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      </div>
+      <div class="header-actions">
+        <a class="header-link" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer">
+          <span class="hl-icon"><svg viewBox="0 0 24 24"><path d="M21.94 4.6c-.27-1.14-1.28-1.72-2.34-1.32L2.9 9.86c-1.16.44-1.14 2.08.02 2.49l4.2 1.46 1.6 5.05c.34 1.06 1.7 1.34 2.42.5l2.28-2.65 4.28 3.16c.86.63 2.1.16 2.32-.88l2.92-14.4zM9.35 13.55l8.55-5.32c.28-.17.57.2.34.42l-6.86 6.53c-.2.2-.34.46-.4.75l-.36 1.86c-.06.3-.5.29-.54-.02l-.5-3.4c-.05-.3.08-.6.32-.78z"/></svg></span>
+          <span>Join Telegram</span>
+        </a>
+        <button class="admin-btn" data-admin-open type="button" aria-label="Admin Sign In">
+          <svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/><circle cx="12" cy="15.4" r="1.15"/><path d="M12 16.4v2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="home-main">
+      <section class="home-card">
+        <div class="home-card-head">
+          <h2>Select Test Language</h2>
+          <p>Choose a language to view available typing tests</p>
+        </div>
+        <div class="home-card-body">
+          <div class="lang-pick-grid">
+            <button type="button" class="lang-pick" data-lang-pick="hindi">
+              <span class="lp-emoji">🇮🇳</span>
+              <span>हिंदी</span>
+              <span class="lp-sub">Hindi Typing Test</span>
+            </button>
+            <button type="button" class="lang-pick" data-lang-pick="english">
+              <span class="lp-emoji">🔤</span>
+              <span>English</span>
+              <span class="lp-sub">English Typing Test</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer"><div class="footer-simple">Made with <span class="heart">❤</span> by <strong>Neeraj Kabra</strong></div></footer>
+  </main>
+
+  <!-- TEST LIST -->
+  <main id="testListScreen" class="screen">
+    <header class="app-header">
+      <div class="brand-wrap">
+        <div class="brand-emblem"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></div>
+        <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      </div>
+      <div class="header-actions">
+        <a class="header-link" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer">
+          <span class="hl-icon"><svg viewBox="0 0 24 24"><path d="M21.94 4.6c-.27-1.14-1.28-1.72-2.34-1.32L2.9 9.86c-1.16.44-1.14 2.08.02 2.49l4.2 1.46 1.6 5.05c.34 1.06 1.7 1.34 2.42.5l2.28-2.65 4.28 3.16c.86.63 2.1.16 2.32-.88l2.92-14.4zM9.35 13.55l8.55-5.32c.28-.17.57.2.34.42l-6.86 6.53c-.2.2-.34.46-.4.75l-.36 1.86c-.06.3-.5.29-.54-.02l-.5-3.4c-.05-.3.08-.6.32-.78z"/></svg></span>
+          <span>Join Telegram</span>
+        </a>
+        <button class="admin-btn" data-admin-open type="button" aria-label="Admin Sign In"><svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/><circle cx="12" cy="15.4" r="1.15"/><path d="M12 16.4v2"/></svg></button>
+      </div>
+    </header>
+
+    <div class="page-main">
+      <section class="page-card">
+        <div class="page-card-head">
+          <div class="page-card-head-left">
+            <span class="page-card-head-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+            <div>
+              <h2 id="testListTitle">Available Tests</h2>
+              <p id="testListSub">Select a test to begin your typing assessment.</p>
+            </div>
+          </div>
+          <button class="list-back-btn" id="listBackBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>
+            <span>Back</span>
+          </button>
+        </div>
+        <div class="page-card-body">
+          <div style="overflow-x:auto">
+            <table class="test-table">
+              <thead>
+                <tr>
+                  <th class="c-head" style="width:3.2rem">S.No.</th>
+                  <th>Test Title</th>
+                  <th class="c-head" style="width:6rem">Language</th>
+                  <th class="c-head" style="width:6rem">Total Words</th>
+                  <th class="c-head" style="width:7rem">Keystrokes</th>
+                  <th class="c-head" style="width:7rem">Avg Word Len</th>
+                  <th class="sticky-col c-head" style="width:7.5rem">Action</th>
+                </tr>
+              </thead>
+              <tbody id="testListBody">
+                <tr class="spin-row"><td colspan="7"><span class="spin-wrap"><span class="spinner"></span>Loading tests...</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" id="testListPagination"></div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer"><div class="footer-simple">Made with <span class="heart">❤</span> by <strong>Neeraj Kabra</strong></div></footer>
+  </main>
+
+  <!-- TYPING -->
+  <main id="typingScreen" class="screen">
+    <div class="typing-main">
+      <div class="timer-line">
+        <span class="timer-label">Time Remaining:</span>
+        <span class="timer-value" id="timerValue">10:00</span>
+      </div>
+      <div class="passage-box" id="tbPassage">Test passage will appear here.</div>
+      <div class="typing-box">
+        <textarea id="tbInput" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Start typing here..."></textarea>
+      </div>
+    </div>
+
+    <div class="floating-font-ctrl" id="floatingFontCtrl">
+      <button class="font-ctrl-btn" id="fontIncBtn" type="button" aria-label="Increase font size">＋</button>
+      <span class="font-ctrl-val" id="fontCtrlVal">22</span>
+      <button class="font-ctrl-btn" id="fontDecBtn" type="button" aria-label="Decrease font size">－</button>
+    </div>
+
+    <div class="floating-actions">
+      <button class="float-btn fullscreen" id="tbFullscreenBtn" type="button" aria-label="Toggle Fullscreen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+        <span class="float-tip" id="tbFsLabel">Fullscreen</span>
+      </button>
+      <button class="float-btn submit" id="tbSubmitBtn" type="button" aria-label="Submit Test">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span class="float-tip">Submit</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- RESULT -->
+  <main id="resultScreen" class="screen">
+    <header class="app-header">
+      <div class="brand-wrap">
+        <div class="brand-emblem"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></div>
+        <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      </div>
+      <div class="header-actions">
+        <a class="header-link" href="https://telegram.me/TypingXPRO" target="_blank" rel="noopener noreferrer">
+          <span class="hl-icon"><svg viewBox="0 0 24 24"><path d="M21.94 4.6c-.27-1.14-1.28-1.72-2.34-1.32L2.9 9.86c-1.16.44-1.14 2.08.02 2.49l4.2 1.46 1.6 5.05c.34 1.06 1.7 1.34 2.42.5l2.28-2.65 4.28 3.16c.86.63 2.1.16 2.32-.88l2.92-14.4zM9.35 13.55l8.55-5.32c.28-.17.57.2.34.42l-6.86 6.53c-.2.2-.34.46-.4.75l-.36 1.86c-.06.3-.5.29-.54-.02l-.5-3.4c-.05-.3.08-.6.32-.78z"/></svg></span>
+          <span>Join Telegram</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="result-main">
+      <section class="result-card">
+        <div class="result-header">
+          <h2 class="result-title">Test Result</h2>
+          <p class="result-sub">Performance summary of your typing test</p>
+        </div>
+        <div class="result-stats">
+          <div class="stat-card marks-card">
+            <div class="stat-label">Marks</div>
+            <div class="stat-value" id="rrMarksBig">0 <span>/ 25</span></div>
+            <div class="stat-badge" id="rrMarksBadge">—</div>
+          </div>
+          <div class="stat-card blue-card">
+            <div class="stat-label">Net WPM</div>
+            <div class="stat-value" id="rrWpm">0</div>
+            <div class="stat-sub">Correct chars ÷ 5 / time</div>
+          </div>
+          <div class="stat-card green-card">
+            <div class="stat-label">Accuracy</div>
+            <div class="stat-value" id="rrAccuracy">0%</div>
+            <div class="stat-sub">Correct vs typed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Time Taken</div>
+            <div class="stat-value" id="rrTimeTaken">00:00</div>
+            <div class="stat-sub" id="rrTimeSub">until last keystroke</div>
+          </div>
+        </div>
+        <div class="result-tables">
+          <div class="result-table-block">
+            <div class="rtb-title">Test Details</div>
+            <table class="info-table"><tbody>
+              <tr><th>Test Name</th><td id="rrTestName">—</td></tr>
+              <tr><th>Language</th><td id="rrLang">—</td></tr>
+              <tr><th>Test Date</th><td id="rrTestDate">—</td></tr>
+              <tr><th>Total Words</th><td id="rrTotal">—</td></tr>
+              <tr><th>Typed Words</th><td id="rrTyped">—</td></tr>
+            </tbody></table>
+          </div>
+          <div class="result-table-block">
+            <div class="rtb-title">Performance Summary</div>
+            <table class="info-table"><tbody>
+              <tr><th>Correct Words</th><td id="rrCorrect">—</td></tr>
+              <tr><th>Backspace Used</th><td id="rrBackspace">—</td></tr>
+              <tr><th>Marks (out of 25)</th><td id="rrMarks">—</td></tr>
+              <tr><th>Net WPM</th><td id="rrWpmInfo">—</td></tr>
+              <tr><th>Accuracy</th><td id="rrAccInfo">—</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+        <div class="result-review">
+          <div class="comp-title">
+            <span>Typed Content Review</span>
+            <div class="comp-legend">
+              <span><span class="lg-dot correct"></span> Correct</span>
+              <span><span class="lg-dot wrong"></span> Incorrect</span>
+              <span><span class="lg-dot missed"></span> Not Typed</span>
+            </div>
+          </div>
+          <div class="comp-box" id="rrComparison"></div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-action" id="rrTestListBtn" type="button">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <span>Back to Test List</span>
+          </button>
+          <button class="btn-action orange" id="rrHomeBtn" type="button">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Return to Home</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer"><div class="footer-simple">Made with <span class="heart">❤</span> by <strong>Neeraj Kabra</strong></div></footer>
+  </main>
+
+  <!-- EDIT TEST -->
+  <main id="editTestScreen" class="screen">
+    <header class="app-header">
+      <div class="brand-wrap">
+        <div class="brand-emblem"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></div>
+        <div class="brand-title">TypingX <span class="brand-accent">PRO</span></div>
+      </div>
+      <div class="header-actions">
+        <button class="admin-btn" id="editBackBtnTop" type="button" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="edit-main">
+      <section class="edit-card">
+        <div class="edit-card-head">
+          <div class="edit-card-head-left">
+            <span class="edit-card-head-icon"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+            <div>
+              <h2>Edit Test</h2>
+              <p>Update title, language and content</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="edit-card-body">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="editTestTitle">Test Title *</label>
+              <input type="text" id="editTestTitle" placeholder="Test title" autocomplete="off" />
+            </div>
+            <div class="form-field">
+              <label for="editTestLang">Language</label>
+              <select id="editTestLang">
+                <option value="hindi">Hindi</option>
+                <option value="english">English</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="live-toolbar" style="margin-top:1.2rem">
+            <div class="live-toolbar-left">
+              <span class="toolbar-label">Content</span>
+              <span class="live-hint" id="editFontHint"></span>
+            </div>
+            <div class="live-toolbar-right">
+              <span class="word-counter"><span class="wc-num" id="editWordCount">0</span><span>words</span></span>
+              <span class="word-counter keystroke"><span class="wc-num" id="editKeystrokeCount">0</span><span>keys</span></span>
+            </div>
+          </div>
+
+          <textarea id="editTestContent" class="edit-content-textarea" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Test content..."></textarea>
+
+          <div class="edit-actions-row">
+            <button type="button" class="btn-ghost" id="editTestCancel">Cancel</button>
+            <button type="button" class="btn-primary" id="editTestSave" disabled>Save Changes</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="app-footer"><div class="footer-simple">Made with <span class="heart">❤</span> by <strong>Neeraj Kabra</strong></div></footer>
+  </main>
+
+  <!-- ADMIN DASHBOARD -->
+  <main id="adminDashboard" class="screen">
+    <header class="admin-header" id="adminHeader">
+      <div class="admin-header-left">
+        <span class="admin-badge" id="adminHeaderBadge">Admin</span>
+        <span class="admin-header-title" id="adminHeaderTitle">Control Panel</span>
+        <span class="admin-user-email" id="adminEmailShow"></span>
+      </div>
+      <div class="admin-header-right">
+        <button class="logout-btn" id="adminLogoutBtn" type="button">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="admin-body">
+      <aside class="admin-sidebar">
+        <div class="sidebar-heading">Management</div>
+
+        <button class="tab-btn active" data-tab="fonts" type="button">
+          <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+          <span>Font Management</span>
+        </button>
+
+        <button class="tab-btn" data-tab="upload" type="button">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Test Content Upload</span>
+        </button>
+
+        <button class="tab-btn" data-tab="files" type="button">
+          <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span>Manage Test Files</span>
+        </button>
+
+        <button class="tab-btn" data-tab="display" type="button">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Display Settings</span>
+        </button>
+      </aside>
+
+      <div class="admin-content">
+
+        <section class="tab-pane active" id="pane-fonts">
+          <h2 class="pane-title">Font Management</h2>
+          <p class="pane-sub">Upload custom fonts (TTF, OTF, WOFF, WOFF2) for each language. One font per language — a new upload replaces the previous one.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload New Font</h3>
+            <div class="form-field span2" style="margin-bottom:1rem">
+              <label>Step 1 · Select Language</label>
+              <div class="lang-choice-group" id="fontLangGroup">
+                <label class="lang-choice"><input type="radio" name="fontLang" value="hindi"><span class="lbox"></span><span class="lname">Hindi</span></label>
+                <label class="lang-choice"><input type="radio" name="fontLang" value="english"><span class="lbox"></span><span class="lname">English</span></label>
+              </div>
+            </div>
+            <div class="hidden-step" id="fontFileStep">
+              <div class="form-grid full">
+                <div class="form-field span2"><label>Step 2 · Select Font File (max 500 KB)</label><input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2" /></div>
+              </div>
+            </div>
+            <div class="hidden-step" id="fontNameStep">
+              <div class="form-grid full">
+                <div class="form-field span2"><label>Step 3 · Font Name</label><input type="text" id="fontName" placeholder="e.g. Kruti Dev 010" autocomplete="off" /></div>
+              </div>
+              <div class="action-row">
+                <button class="btn-action" id="uploadFontBtn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span id="uploadFontBtnText">Submit Font</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Uploaded Fonts</h3>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead><tr><th>Font Name</th><th>Language</th><th>Upload Date</th><th>Action</th></tr></thead>
+                <tbody id="fontsTableBody"><tr class="spin-row"><td colspan="4"><span class="spin-wrap"><span class="spinner"></span>Loading fonts...</span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-upload">
+          <h2 class="pane-title">Test Content Upload</h2>
+          <p class="pane-sub">Add the text that students will type. Choose either method below.</p>
+
+          <div class="panel">
+            <h3 class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Method 1 — Upload TXT File</h3>
+            <div class="form-grid">
+              <div class="form-field"><label for="fileTitle">Test Title</label><input type="text" id="fileTitle" placeholder="e.g. Beginner Level Test 1" autocomplete="off" /></div>
+              <div class="form-field"><label for="fileLang">Language</label><select id="fileLang"><option value="hindi">Hindi</option><option value="english" selected>English</option></select></div>
+              <div class="form-field span2"><label for="contentFile">Select TXT File</label><input type="file" id="contentFile" accept=".txt,text/plain" /></div>
+            </div>
+            <div class="action-row">
+              <button class="btn-action orange" id="uploadContentBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span id="uploadContentBtnText">Upload Test Content</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3 class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Method 2 — Write Content Live</h3>
+            <div class="form-grid">
+              <div class="form-field"><label for="liveTitle">Test Title</label><input type="text" id="liveTitle" placeholder="e.g. Practice Set A" autocomplete="off" /></div>
+              <div class="form-field"><label for="liveLang">Language</label><select id="liveLang"><option value="hindi">Hindi</option><option value="english" selected>English</option></select></div>
+            </div>
+
+            <div class="live-toolbar" style="margin-top:1.1rem">
+              <div class="live-toolbar-left">
+                <span class="toolbar-label">Live Editor</span>
+                <span class="live-hint" id="liveFontHint"></span>
+              </div>
+              <div class="live-toolbar-right">
+                <span class="word-counter"><span class="wc-num" id="liveWordCount">0</span><span>words</span></span>
+                <span class="word-counter keystroke"><span class="wc-num" id="liveKeystrokeCount">0</span><span>keys</span></span>
+              </div>
+            </div>
+
+            <textarea id="liveContent" class="live-textarea" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Start typing or paste the test content here..."></textarea>
+
+            <div class="action-row">
+              <button class="btn-action orange" id="saveLiveBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span id="saveLiveBtnText">Save Content</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-files">
+          <h2 class="pane-title">Manage Test Files</h2>
+          <p class="pane-sub">View, edit, preview and delete previously uploaded or written test content.</p>
+          <div class="panel">
+            <h3 class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>All Uploaded Test Files</h3>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead><tr><th>Title</th><th>Language</th><th>Source</th><th>Words</th><th>Keystrokes</th><th>Avg Len</th><th>Uploaded</th><th class="sticky-col">Actions</th></tr></thead>
+                <tbody id="filesTableBody"><tr class="spin-row"><td colspan="8"><span class="spin-wrap"><span class="spinner"></span>Loading test files...</span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-pane" id="pane-display">
+          <h2 class="pane-title">Display Settings</h2>
+          <p class="pane-sub">Configure default font size, line height and content width — separately for Hindi and English.</p>
+          <div class="panel">
+            <h3 class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg>Per-Language Typing Defaults</h3>
+            <div class="settings-lang-block">
+              <div class="settings-lang-head"><span class="sl-dot"></span><span class="sl-title">Hindi (हिंदी)</span><span class="sl-hint">Applies to Hindi tests</span></div>
+              <div class="form-grid">
+                <div class="form-field"><label for="hindiFontSize">Font Size (rem)</label><input type="text" id="hindiFontSize" value="1.4" autocomplete="off" /></div>
+                <div class="form-field"><label for="hindiLineHeight">Line Height</label><input type="text" id="hindiLineHeight" value="1.5" autocomplete="off" /></div>
+                <div class="form-field span2"><label for="hindiContentWidth">Content Width (px) — 500 to 1600</label><input type="text" id="hindiContentWidth" value="780" autocomplete="off" /></div>
+              </div>
+            </div>
+            <div class="settings-lang-block">
+              <div class="settings-lang-head"><span class="sl-dot" style="background:var(--gov-green)"></span><span class="sl-title">English</span><span class="sl-hint">Applies to English tests</span></div>
+              <div class="form-grid">
+                <div class="form-field"><label for="englishFontSize">Font Size (rem)</label><input type="text" id="englishFontSize" value="1.4" autocomplete="off" /></div>
+                <div class="form-field"><label for="englishLineHeight">Line Height</label><input type="text" id="englishLineHeight" value="1.5" autocomplete="off" /></div>
+                <div class="form-field span2"><label for="englishContentWidth">Content Width (px) — 500 to 1600</label><input type="text" id="englishContentWidth" value="780" autocomplete="off" /></div>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button class="btn-action" id="applySettingsBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span id="applySettingsBtnText">Save Settings</span>
+              </button>
+              <button class="btn-action orange" id="resetSettingsBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                Reset to Default
+              </button>
+            </div>
+
+            <div style="margin-top:1.4rem">
+              <label style="display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--gov-muted);margin-bottom:0.5rem">Live Preview</label>
+              <div class="settings-preview" id="settingsPreview">The quick brown fox jumps over the lazy dog.</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <footer class="app-footer"><div class="footer-simple">Made with <span class="heart">❤</span> by <strong>Neeraj Kabra</strong></div></footer>
+  </main>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-card">
+      <div class="modal-card-head">
+        <span class="mc-icon"><svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9"/></svg></span>
+        <h3 id="adminModalTitle">Administrator Sign In</h3>
+      </div>
+      <div class="modal-card-body">
+        <form id="adminForm" novalidate>
+          <label class="field"><span>Email</span><input type="email" id="adminUser" autocomplete="email" spellcheck="false" placeholder="admin@example.com" /></label>
+          <label class="field"><span>Password</span>
+            <div class="pwd-wrap">
+              <input type="password" id="adminPass" autocomplete="current-password" placeholder="Enter password" />
+              <button type="button" class="pwd-toggle" id="adminPassToggle" aria-label="Show/Hide password">
+                <svg class="icon-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </label>
+
+          <div class="modal-msg" id="adminMsg"></div>
+          <div class="modal-actions">
+            <button type="button" class="btn-ghost" id="adminCancel">Cancel</button>
+            <button type="submit" class="btn-primary" id="adminSignInBtn">Sign In</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal-card" style="max-width:48rem">
+      <div class="modal-card-head">
+        <span class="mc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+        <h3 id="previewTitleText">Test Content Preview</h3>
+      </div>
+      <div class="modal-card-body">
+        <div class="preview-content" id="previewBody"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="previewClose">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-card warn" style="max-width:26rem">
+      <div class="modal-card-head">
+        <span class="mc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        <h3 id="confirmTitle">Confirm</h3>
+      </div>
+      <div class="modal-card-body">
+        <p class="confirm-text" id="confirmText">Are you sure?</p>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="confirmCancel">Cancel</button>
+          <button type="button" class="btn-danger" id="confirmOk">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="submitConfirmModal">
+    <div class="modal-card" style="max-width:32rem">
+      <div class="modal-card-head">
+        <span class="mc-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <h3>Submit Test? / टेस्ट सबमिट करें?</h3>
+      </div>
+      <div class="modal-card-body">
+        <div class="bilingual-msg">
+          <div class="bi-block">
+            <div class="bi-lang">हिंदी</div>
+            <p class="bi-text">क्या आप वाकई अभी टेस्ट सबमिट करना चाहते हैं? सबमिट करने के बाद आप कोई भी बदलाव नहीं कर पाएंगे। कृपया पुष्टि करें।</p>
+          </div>
+          <div class="bi-block">
+            <div class="bi-lang">English</div>
+            <p class="bi-text">Are you sure you want to submit your test now? Once submitted, you will not be able to make any changes. Please confirm to proceed.</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="submitCancel">Cancel / रद्द करें</button>
+          <button type="button" class="btn-primary" id="submitOk">Submit / सबमिट करें</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="unsavedModal">
+    <div class="modal-card warn" style="max-width:26rem">
+      <div class="modal-card-head">
+        <span class="mc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+        <h3>Unsaved Changes</h3>
+      </div>
+      <div class="modal-card-body">
+        <p class="confirm-text">You have unsaved changes. If you leave now, your changes will be lost. Are you sure?</p>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="unsavedStay">Stay</button>
+          <button type="button" class="btn-danger" id="unsavedLeave">Leave Anyway</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="tick">✓</span><span id="toastText">Done</span></div>
+  <div class="loading-ov" id="loadingOverlay"><span class="spinner"></span><span>Please wait...</span></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database-compat.js"></script>
+
+<script>
+(function(){
+  'use strict';
+
+  try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch(e){}
+
+  /* MULTI-TAB BLOCK */
+  (function(){
+    try {
+      const bc = new BroadcastChannel('typingx_single_tab');
+      let others = 0;
+      bc.onmessage = function(e){
+        if (e.data === 'hello') { bc.postMessage('hi'); others++; }
+        else if (e.data === 'hi') { others++; }
+      };
+      bc.postMessage('hello');
+      setTimeout(function(){
+        if (others > 0){
+          const ov = document.createElement('div');
+          ov.className = 'mtb-overlay';
+          ov.innerHTML = '<div class="mtb-box"><h1>TypingX PRO is already open</h1><p>This application can only run in one browser tab at a time. Please close the other tab and refresh.</p></div>';
+          document.body.appendChild(ov);
+          throw new Error('Multi-tab blocked');
+        }
+      }, 400);
+    } catch(e){}
+  })();
+
+  /* FIREBASE CONFIG */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDWeTzB4to-6TweWaKq3dFvcR4wRxNEqJM",
+    authDomain: "typingxpro-f6768.firebaseapp.com",
+    databaseURL: "https://typingxpro-f6768-default-rtdb.firebaseio.com",
+    projectId: "typingxpro-f6768",
+    storageBucket: "typingxpro-f6768.firebasestorage.app",
+    messagingSenderId: "1051890531299",
+    appId: "1:1051890531299:web:7442c7c229435b55713ed6"
+  };
+
+  let auth = null, db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.database();
+  } catch(e){ console.error('Firebase init failed:', e); }
+
+  /* ELEMENTS */
+  const homeScreen = document.getElementById('homeScreen');
+  const testListScreen = document.getElementById('testListScreen');
+  const typingScreen = document.getElementById('typingScreen');
+  const resultScreen = document.getElementById('resultScreen');
+  const editTestScreen = document.getElementById('editTestScreen');
+  const adminDashboard = document.getElementById('adminDashboard');
+
+  const adminModal = document.getElementById('adminModal');
+  const adminForm = document.getElementById('adminForm');
+  const adminUser = document.getElementById('adminUser');
+  const adminPass = document.getElementById('adminPass');
+  const adminPassToggle = document.getElementById('adminPassToggle');
+  const adminMsg = document.getElementById('adminMsg');
+  const adminCancel = document.getElementById('adminCancel');
+  const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+  const adminEmailShow = document.getElementById('adminEmailShow');
+  const adminSignInBtn = document.getElementById('adminSignInBtn');
+
+  const testListTitle = document.getElementById('testListTitle');
+  const testListSub = document.getElementById('testListSub');
+  const testListBody = document.getElementById('testListBody');
+  const testListPagination = document.getElementById('testListPagination');
+  const listBackBtn = document.getElementById('listBackBtn');
+
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+
+  const fontsTableBody = document.getElementById('fontsTableBody');
+  const filesTableBody = document.getElementById('filesTableBody');
+
+  const fontLangGroup = document.getElementById('fontLangGroup');
+  const fontFileStep = document.getElementById('fontFileStep');
+  const fontNameStep = document.getElementById('fontNameStep');
+  const fontFile = document.getElementById('fontFile');
+  const fontName = document.getElementById('fontName');
+  const uploadFontBtn = document.getElementById('uploadFontBtn');
+  const uploadFontBtnText = document.getElementById('uploadFontBtnText');
+
+  const fileTitle = document.getElementById('fileTitle');
+  const fileLang = document.getElementById('fileLang');
+  const contentFile = document.getElementById('contentFile');
+  const uploadContentBtn = document.getElementById('uploadContentBtn');
+  const uploadContentBtnText = document.getElementById('uploadContentBtnText');
+
+  const liveTitle = document.getElementById('liveTitle');
+  const liveLang = document.getElementById('liveLang');
+  const liveContent = document.getElementById('liveContent');
+  const liveFontHint = document.getElementById('liveFontHint');
+  const liveWordCount = document.getElementById('liveWordCount');
+  const liveKeystrokeCount = document.getElementById('liveKeystrokeCount');
+  const saveLiveBtn = document.getElementById('saveLiveBtn');
+  const saveLiveBtnText = document.getElementById('saveLiveBtnText');
+
+  const previewModal = document.getElementById('previewModal');
+  const previewBody = document.getElementById('previewBody');
+  const previewClose = document.getElementById('previewClose');
+  const previewTitleText = document.getElementById('previewTitleText');
+
+  const editBackBtnTop = document.getElementById('editBackBtnTop');
+  const editTestTitle = document.getElementById('editTestTitle');
+  const editTestLang = document.getElementById('editTestLang');
+  const editTestContent = document.getElementById('editTestContent');
+  const editFontHint = document.getElementById('editFontHint');
+  const editWordCount = document.getElementById('editWordCount');
+  const editKeystrokeCount = document.getElementById('editKeystrokeCount');
+  const editTestCancel = document.getElementById('editTestCancel');
+  const editTestSave = document.getElementById('editTestSave');
+
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmTitle = document.getElementById('confirmTitle');
+  const confirmText = document.getElementById('confirmText');
+  const confirmCancel = document.getElementById('confirmCancel');
+  const confirmOk = document.getElementById('confirmOk');
+
+  const unsavedModal = document.getElementById('unsavedModal');
+  const unsavedStay = document.getElementById('unsavedStay');
+  const unsavedLeave = document.getElementById('unsavedLeave');
+
+  const submitConfirmModal = document.getElementById('submitConfirmModal');
+  const submitCancel = document.getElementById('submitCancel');
+  const submitOk = document.getElementById('submitOk');
+
+  const tbPassage = document.getElementById('tbPassage');
+  const tbInput = document.getElementById('tbInput');
+  const tbFullscreenBtn = document.getElementById('tbFullscreenBtn');
+  const tbFsLabel = document.getElementById('tbFsLabel');
+  const tbSubmitBtn = document.getElementById('tbSubmitBtn');
+  const timerValue = document.getElementById('timerValue');
+  const fontIncBtn = document.getElementById('fontIncBtn');
+  const fontDecBtn = document.getElementById('fontDecBtn');
+  const fontCtrlVal = document.getElementById('fontCtrlVal');
+  const floatingFontCtrl = document.getElementById('floatingFontCtrl');
+
+  const rrTestName = document.getElementById('rrTestName');
+  const rrLang = document.getElementById('rrLang');
+  const rrTestDate = document.getElementById('rrTestDate');
+  const rrTotal = document.getElementById('rrTotal');
+  const rrTyped = document.getElementById('rrTyped');
+  const rrCorrect = document.getElementById('rrCorrect');
+  const rrBackspace = document.getElementById('rrBackspace');
+  const rrMarks = document.getElementById('rrMarks');
+  const rrWpmInfo = document.getElementById('rrWpmInfo');
+  const rrAccInfo = document.getElementById('rrAccInfo');
+  const rrMarksBig = document.getElementById('rrMarksBig');
+  const rrMarksBadge = document.getElementById('rrMarksBadge');
+  const rrWpm = document.getElementById('rrWpm');
+  const rrAccuracy = document.getElementById('rrAccuracy');
+  const rrTimeTaken = document.getElementById('rrTimeTaken');
+  const rrTimeSub = document.getElementById('rrTimeSub');
+  const rrComparison = document.getElementById('rrComparison');
+  const rrHomeBtn = document.getElementById('rrHomeBtn');
+  const rrTestListBtn = document.getElementById('rrTestListBtn');
+
+  const hindiFontSize = document.getElementById('hindiFontSize');
+  const hindiLineHeight = document.getElementById('hindiLineHeight');
+  const hindiContentWidth = document.getElementById('hindiContentWidth');
+  const englishFontSize = document.getElementById('englishFontSize');
+  const englishLineHeight = document.getElementById('englishLineHeight');
+  const englishContentWidth = document.getElementById('englishContentWidth');
+  const applySettingsBtn = document.getElementById('applySettingsBtn');
+  const applySettingsBtnText = document.getElementById('applySettingsBtnText');
+  const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+  const settingsPreview = document.getElementById('settingsPreview');
+
+  /* STATE */
+  const state = {
+    selectedLanguage: null,
+    currentTest: null,
+    currentPassage: '',
+    typingStarted: false,
+    isFinalizing: false,
+    backspaceCount: 0,
+    testStartTime: null,
+    testEndTime: null,
+    lastKeystrokeTime: null,
+    editOriginal: null,
+    adminEmail: ''
+  };
+
+  const adminData = { fonts: [], files: [] };
+  const loadedFontFamilies = new Set();
+  const firebaseReady = { fonts: false, files: false, settings: false };
+  const displaySettings = {
+    hindi:   { fontSize: 1.4, lineHeight: 1.5, contentWidth: 780 },
+    english: { fontSize: 1.4, lineHeight: 1.5, contentWidth: 780 }
+  };
+
+  let pendingDelete = null;
+  let pendingUnsavedCallback = null;
+  let editingTestKey = null;
+  let liveFontSize = 1.4;
+  let testListPage = 1;
+  const TESTS_PER_PAGE = 10;
+  const TEST_DURATION_SECONDS = 600;
+  let timerInterval = null;
+  let timeRemaining = TEST_DURATION_SECONDS;
+  const TEST_MAX_MARKS = 25;
+  const MIN_FONT_SIZE = 0.9;
+  const MAX_FONT_SIZE = 2.6;
+
+  /* UTIL */
+  function escapeHtml(str){ return String(str == null ? '' : str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function formatDate(ts){ if(!ts) return '—'; const d=new Date(ts); return String(d.getDate()).padStart(2,'0')+' '+d.toLocaleString('en-US',{month:'short'})+' '+d.getFullYear()+', '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+  function formatDateShort(ts){ if(!ts) return '—'; const d=new Date(ts); return String(d.getDate()).padStart(2,'0')+' '+d.toLocaleString('en-US',{month:'short'})+' '+d.getFullYear(); }
+
+  function getPaddedContent(content, lang){ const target = (lang==='hindi')?400:500; let words = String(content||'').trim().split(/\s+/).filter(Boolean); if(words.length===0) return ''; if(words.length===target) return words.join(' '); if(words.length>target) return words.slice(0,target).join(' '); const orig = words.slice(); while(words.length<target) words = words.concat(orig); return words.slice(0,target).join(' '); }
+  function getKeystrokeCount(content){ return String(content || '').length; }
+  function getAvgWordLength(content){
+    const text = String(content || '').trim();
+    if (!text) return 0;
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length === 0) return 0;
+    const noSpaces = text.replace(/\s+/g, '');
+    return Math.round((noSpaces.length / words.length) * 10) / 10;
+  }
+  function computeTestStats(content, lang){
+    const padded = getPaddedContent(content, lang);
+    return { padded: padded, keystrokes: getKeystrokeCount(padded), avgLen: getAvgWordLength(padded) };
+  }
+
+  function applySettingsForLang(lang){
+    const cfg = displaySettings[lang] || displaySettings.english;
+    document.documentElement.style.setProperty('--typing-fs', cfg.fontSize+'rem');
+    document.documentElement.style.setProperty('--typing-lh', String(cfg.lineHeight));
+    document.documentElement.style.setProperty('--content-width', (cfg.contentWidth||780)+'px');
+  }
+  function syncSettingsInputs(){
+    hindiFontSize.value=String(displaySettings.hindi.fontSize);
+    hindiLineHeight.value=String(displaySettings.hindi.lineHeight);
+    hindiContentWidth.value=String(displaySettings.hindi.contentWidth);
+    englishFontSize.value=String(displaySettings.english.fontSize);
+    englishLineHeight.value=String(displaySettings.english.lineHeight);
+    englishContentWidth.value=String(displaySettings.english.contentWidth);
+  }
+  function spinRow(cols,text){ return '<tr class="spin-row"><td colspan="'+cols+'"><span class="spin-wrap"><span class="spinner"></span>'+escapeHtml(text)+'</span></td></tr>'; }
+
+  function btnLoading(btn,textEl,loadingText){ if(!btn) return; if(textEl) textEl.textContent=loadingText||'Please wait...'; else btn.textContent=loadingText||'Please wait...'; if(!btn.querySelector('.spinner')){ var sp=document.createElement('span'); sp.className='spinner sm'; btn.insertBefore(sp,btn.firstChild); } btn.disabled=true; }
+  function btnReset(btn,textEl,normalText,disabled){ if(!btn) return; var sp=btn.querySelector('.spinner'); if(sp) sp.remove(); if(textEl) textEl.textContent=normalText; else btn.textContent=normalText; btn.disabled=!!disabled; }
+
+  let toastTimer = null;
+  function showToast(text,isWarn){ toastText.textContent=text; toast.classList.toggle('warn',!!isWarn); toast.querySelector('.tick').textContent=isWarn?'!':'✓'; toast.classList.add('show'); if(toastTimer) clearTimeout(toastTimer); toastTimer=setTimeout(function(){ toast.classList.remove('show'); },2600); }
+
+  /* NAVIGATION */
+  const SCREENS = { home: homeScreen, testList: testListScreen, typing: typingScreen, result: resultScreen, editTest: editTestScreen, admin: adminDashboard };
+  let currentScreen = 'home';
+
+  function scrollTopInstant(){
+    try { window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch(e){ window.scrollTo(0,0); }
+    document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
+    const main = document.querySelector('.screen.active'); if (main) main.scrollTop = 0;
+  }
+
+  function showScreenByName(name){
+    const target = SCREENS[name] || homeScreen;
+    Object.keys(SCREENS).forEach(function(k){ SCREENS[k].classList.remove('active'); });
+    target.classList.add('active');
+    currentScreen = name;
+    scrollTopInstant();
+  }
+
+  function navigateTo(name){
+    if (typingScreen.classList.contains('active') && state.typingStarted && name !== 'result'){
+      showToast('You cannot leave the test until you submit', true); return;
+    }
+    try { history.pushState({ screen: name }, '', location.pathname + '#/' + name); } catch(e){}
+    showScreenByName(name);
+    onScreenShown(name);
+  }
+
+  function onScreenShown(name){
+    if (name === 'testList'){
+      renderTestList(state.selectedLanguage);
+    }
+    if (name === 'admin'){
+      renderFonts();
+      renderFiles();
+    }
+  }
+
+  try { history.replaceState({ screen: 'home' }, '', location.pathname + '#/home'); } catch(e){}
+
+  window.addEventListener('popstate', function(e){
+    if (typingScreen.classList.contains('active') && state.typingStarted){
+      try { history.pushState({ screen: 'typing' }, '', location.pathname + '#/typing'); } catch(err) {}
+      showToast('You cannot leave the test until you submit', true);
+      return;
+    }
+    if (editTestScreen.classList.contains('active') && hasUnsavedEditChanges()){
+      try { history.pushState({ screen: 'editTest' }, '', location.pathname + '#/editTest'); } catch(err){}
+      askUnsavedLeave(function(){
+        editingTestKey = null;
+        state.editOriginal = null;
+        if (history.length > 2) history.go(-2);
+        else { showScreenByName('admin'); currentScreen = 'admin'; }
+      });
+      return;
+    }
+    if (editTestScreen.classList.contains('active')){
+      editingTestKey = null;
+      state.editOriginal = null;
+    }
+    const name = (e.state && e.state.screen) || 'home';
+    showScreenByName(name);
+    onScreenShown(name);
+  });
+
+  document.addEventListener('keydown', function(e){
+    const isEsc = (e.key==='Escape'||e.key==='Esc'||e.keyCode===27);
+    if(typingScreen.classList.contains('active') && state.typingStarted){
+      if(isEsc){ e.preventDefault(); showToast('You cannot exit the test until you submit',true); return; }
+    }
+    if(!isEsc) return;
+    if(submitConfirmModal.classList.contains('open')){ e.preventDefault(); closeSubmitConfirm(); return; }
+    if(unsavedModal.classList.contains('open')){ e.preventDefault(); closeUnsavedModal(); return; }
+    if(confirmModal.classList.contains('open')){ e.preventDefault(); closeConfirm(); return; }
+    if(adminModal.classList.contains('open')){ e.preventDefault(); closeAdminModal(); return; }
+    if(previewModal.classList.contains('open')){ e.preventDefault(); closePreview(); return; }
+    if(editTestScreen.classList.contains('active')){ e.preventDefault(); attemptCloseEditTest(); return; }
+  }, true);
+
+  window.addEventListener('beforeunload', function(e){ if(typingScreen.classList.contains('active') && state.typingStarted){ e.preventDefault(); e.returnValue=''; return ''; } });
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && typingScreen.classList.contains('active') && state.typingStarted){
+      finalizeSubmit(true);
+      setTimeout(function(){ showToast('Test auto-submitted — tab switch detected',true); },200);
+    }
+  });
+
+  /* FIREBASE SYNC */
+  function startFirebaseSync(){
+    if(!db) return;
+
+    db.ref('fonts').on('value', async function(snap){
+      const val=snap.val()||{};
+      adminData.fonts=[];
+      for(const lang in val){ const font=Object.assign({language:lang}, val[lang]); adminData.fonts.push(font); await registerFontFromData(font); }
+      firebaseReady.fonts=true; renderFonts(); updateLiveFont(); updateEditFont();
+    }, function(err){ console.error('fonts sync',err); firebaseReady.fonts=true; renderFonts(); showToast('⚠️ Could not sync fonts', true); });
+
+    db.ref('files').on('value', function(snap){
+      const val=snap.val()||{};
+      adminData.files = Object.keys(val).map(function(k){ return Object.assign({ _key:k }, val[k]); }).sort(function(a,b){ return (b.uploadedAt||0)-(a.uploadedAt||0); });
+      firebaseReady.files=true;
+      renderFiles();
+      if(testListScreen.classList.contains('active')){ renderTestList(state.selectedLanguage); }
+    }, function(err){ console.error('files sync',err); firebaseReady.files=true; renderFiles(); showToast('⚠️ Could not sync test files', true); });
+
+    db.ref('displaySettings').on('value', function(snap){
+      const val=snap.val()||{};
+      ['hindi','english'].forEach(function(lang){
+        const cfg=val[lang]||{};
+        if(typeof cfg.fontSize==='number') displaySettings[lang].fontSize=cfg.fontSize;
+        if(typeof cfg.lineHeight==='number') displaySettings[lang].lineHeight=cfg.lineHeight;
+        if(typeof cfg.contentWidth==='number') displaySettings[lang].contentWidth=cfg.contentWidth;
+      });
+      firebaseReady.settings=true; syncSettingsInputs(); updateLiveFont(); updateEditFont();
+      applySettingsForLang(state.selectedLanguage||'english');
+      updateSettingsPreview();
+    }, function(err){ console.error('settings sync',err); firebaseReady.settings=true; showToast('⚠️ Could not sync settings', true); });
+  }
+
+  async function registerFontFromData(font){
+    if(!font||!font.dataUrl) return;
+    if(loadedFontFamilies.has(font.family)) return;
+    try { const ff = new FontFace(font.family, 'url('+font.dataUrl+')'); await ff.load(); document.fonts.add(ff); loadedFontFamilies.add(font.family); } catch(err){ console.warn('Font load failed:',font.family,err); }
+  }
+
+  /* ADMIN LOGIN */
+  document.querySelectorAll('[data-admin-open]').forEach(function(btn){ btn.addEventListener('click', openAdminModal); });
+
+  adminPassToggle.addEventListener('click', function(){
+    const isPwd = adminPass.type === 'password';
+    adminPass.type = isPwd ? 'text' : 'password';
+    adminPassToggle.classList.toggle('showing', isPwd);
+  });
+
+  function openAdminModal(){
+    adminForm.reset();
+    hideAdminMsg();
+    adminPass.type = 'password';
+    adminPassToggle.classList.remove('showing');
+    adminModal.classList.add('open');
+    setTimeout(function(){ adminUser.focus(); },60);
+  }
+  function closeAdminModal(){ adminModal.classList.remove('open'); hideAdminMsg(); }
+  function showAdminMsg(text,type){ adminMsg.textContent=text; adminMsg.classList.remove('err','ok'); adminMsg.classList.add('show',type); }
+  function hideAdminMsg(){ adminMsg.classList.remove('show','err','ok'); adminMsg.textContent=''; }
+
+  adminCancel.addEventListener('click', closeAdminModal);
+  adminModal.addEventListener('click', function(e){ if(e.target === adminModal) closeAdminModal(); });
+
+  adminForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = adminUser.value.trim();
+    const pass = adminPass.value;
+    if(!email||!pass){ showAdminMsg('Please enter both Email and Password.','err'); return; }
+    if(!auth){ showAdminMsg('Firebase not initialized.','err'); return; }
+    btnLoading(adminSignInBtn, null, 'Signing in...');
+    showAdminMsg('Signing in...','ok');
+    auth.signInWithEmailAndPassword(email, pass).then(function(cred){
+      btnReset(adminSignInBtn, null, 'Sign In');
+      showAdminMsg('Signed in successfully.','ok');
+      state.adminEmail = cred.user.email;
+      setTimeout(function(){ closeAdminModal(); enterAdminDashboard(cred.user.email); },300);
+    }).catch(function(err){
+      btnReset(adminSignInBtn, null, 'Sign In');
+      let msg = 'Invalid credentials.';
+      if(err && err.code === 'auth/user-not-found') msg = 'No admin account with this email.';
+      else if(err && err.code === 'auth/wrong-password') msg = 'Incorrect password.';
+      else if(err && err.code === 'auth/invalid-email') msg = 'Please enter a valid email.';
+      else if(err && err.code === 'auth/invalid-credential') msg = 'Invalid email or password.';
+      showAdminMsg(msg,'err');
+    });
+  });
+
+  if(auth){
+    auth.onAuthStateChanged(function(user){
+      if(user && adminDashboard.classList.contains('active')){ adminEmailShow.textContent = user.email||''; }
+    });
+  }
+
+  function enterAdminDashboard(email){
+    adminEmailShow.textContent = email || '';
+    syncSettingsInputs();
+    navigateTo('admin');
+    showToast('Welcome back, Administrator');
+  }
+
+  adminLogoutBtn.addEventListener('click', function(){
+    if(auth){
+      auth.signOut().then(function(){ adminEmailShow.textContent=''; navigateTo('home'); showToast('Signed out'); }).catch(function(){ navigateTo('home'); });
+    } else { navigateTo('home'); }
+  });
+
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+  function activateTab(name){
+    tabButtons.forEach(function(b){ b.classList.toggle('active', b.dataset.tab === name); });
+    tabPanes.forEach(function(p){ p.classList.toggle('active', p.id === 'pane-'+name); });
+    if(name === 'files') renderFiles();
+    if(name === 'fonts') renderFonts();
+    if(name === 'display') updateSettingsPreview();
+  }
+  tabButtons.forEach(function(btn){ btn.addEventListener('click', function(){ activateTab(btn.dataset.tab); }); });
+
+  /* FONTS */
+  let selectedFontLang = null;
+  fontLangGroup.addEventListener('change', function(e){
+    const input = e.target;
+    if(!input||input.name!=='fontLang') return;
+    selectedFontLang = input.value;
+    fontLangGroup.querySelectorAll('.lang-choice').forEach(function(opt){ opt.classList.toggle('is-selected', opt.querySelector('input').checked); });
+    fontFileStep.classList.add('show');
+    fontNameStep.classList.remove('show');
+    fontName.value=''; fontFile.value='';
+  });
+  fontFile.addEventListener('change', function(){
+    if(fontFile.files && fontFile.files[0]){ fontNameStep.classList.add('show'); setTimeout(function(){ fontName.focus(); },80); }
+    else fontNameStep.classList.remove('show');
+  });
+
+  uploadFontBtn.addEventListener('click', function(){
+    if(!selectedFontLang){ showToast('Please select a language first',true); return; }
+    const f = fontFile.files && fontFile.files[0];
+    if(!f){ showToast('Please select a font file',true); return; }
+    const displayName = fontName.value.trim();
+    if(displayName.length < 2){ showToast('Please enter a font name',true); fontName.focus(); return; }
+    const ext = f.name.split('.').pop().toLowerCase();
+    if(['ttf','otf','woff','woff2'].indexOf(ext) === -1){ showToast('Only TTF, OTF, WOFF or WOFF2 allowed',true); return; }
+    if(f.size > 500*1024){ showToast('Font file must be 500 KB or smaller',true); return; }
+
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const dataUrl = ev.target.result;
+      const family = 'TypingXFont_' + selectedFontLang;
+      const langToStore = selectedFontLang;
+      btnLoading(uploadFontBtn, uploadFontBtnText, 'Uploading...');
+      db.ref('fonts/'+langToStore).set({ displayName:displayName, family:family, fileName:f.name, size:f.size, dataUrl:dataUrl, uploadedAt:Date.now() }).then(function(){
+        btnReset(uploadFontBtn, uploadFontBtnText, 'Submit Font');
+        const ff = new FontFace(family, 'url('+dataUrl+')');
+        ff.load().then(function(loaded){ document.fonts.add(loaded); loadedFontFamilies.add(family); updateLiveFont(); updateEditFont(); }).catch(function(){});
+        resetFontUploadFlow();
+        showToast('Font uploaded');
+      }).catch(function(err){ btnReset(uploadFontBtn, uploadFontBtnText, 'Submit Font'); showToast('Failed: '+(err.message||'unknown'),true); });
+    };
+    reader.onerror = function(){ showToast('Failed to read the font file',true); };
+    reader.readAsDataURL(f);
+  });
+
+  function resetFontUploadFlow(){
+    fontLangGroup.querySelectorAll('input').forEach(function(i){ i.checked=false; });
+    fontLangGroup.querySelectorAll('.lang-choice').forEach(function(o){ o.classList.remove('is-selected'); });
+    selectedFontLang = null; fontFileStep.classList.remove('show'); fontNameStep.classList.remove('show');
+    fontFile.value=''; fontName.value='';
+  }
+
+  function renderFonts(){
+    if(!firebaseReady.fonts){ fontsTableBody.innerHTML = spinRow(4,'Loading fonts...'); return; }
+    if(adminData.fonts.length === 0){ fontsTableBody.innerHTML = '<tr class="empty-row"><td colspan="4">No fonts uploaded yet.</td></tr>'; return; }
+    fontsTableBody.innerHTML = adminData.fonts.map(function(f,i){
+      const langBadge = f.language === 'hindi' ? '<span class="badge hindi">Hindi</span>' : '<span class="badge english">English</span>';
+      return '<tr><td>'+escapeHtml(f.displayName)+'</td><td>'+langBadge+'</td><td>'+formatDate(f.uploadedAt)+'</td>' +
+        '<td><div class="row-actions"><button class="icon-btn del" data-del-font="'+i+'" title="Delete"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></div></td></tr>';
+    }).join('');
+  }
+
+  fontsTableBody.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-del-font]');
+    if(!btn) return;
+    const idx = parseInt(btn.getAttribute('data-del-font'),10);
+    const f = adminData.fonts[idx];
+    if(!f) return;
+    openConfirm('Delete Font','Delete font <strong>'+escapeHtml(f.displayName)+'</strong> ('+(f.language==='hindi'?'Hindi':'English')+')?', function(){
+      db.ref('fonts/'+f.language).remove().then(function(){ loadedFontFamilies.delete(f.family); showToast('Font removed'); });
+    });
+  });
+
+  function getLatestFontForLang(lang){ return adminData.fonts.find(function(f){ return f.language === lang; }) || null; }
+
+  /* FILE UPLOAD */
+  uploadContentBtn.addEventListener('click', function(){
+    const title = fileTitle.value.trim();
+    const lang = fileLang.value;
+    const f = contentFile.files && contentFile.files[0];
+
+    if(title.length < 2){ showToast('Please enter a test title',true); fileTitle.focus(); return; }
+    if(adminData.files.some(function(x){ return (x.title||'').toLowerCase() === title.toLowerCase(); })){ showToast('Test with this title already exists',true); fileTitle.focus(); return; }
+    if(!f){ showToast('Please select a TXT file',true); return; }
+    if(!/\.txt$/i.test(f.name) && f.type !== 'text/plain'){ showToast('Only TXT files allowed',true); return; }
+
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const text = String(ev.target.result||'').trim();
+      if(!text){ showToast('TXT file is empty',true); return; }
+      const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+      btnLoading(uploadContentBtn, uploadContentBtnText, 'Uploading...');
+      db.ref('files').push({ title:title, language:lang, source:'File Upload', fileName:f.name, size:f.size, words:wordCount, content:text, uploadedAt:Date.now(), uploadedBy:'ADMIN' }).then(function(){
+        btnReset(uploadContentBtn, uploadContentBtnText, 'Upload Test Content');
+        fileTitle.value=''; contentFile.value='';
+        showToast('Test content uploaded');
+      }).catch(function(err){ btnReset(uploadContentBtn, uploadContentBtnText, 'Upload Test Content'); showToast('Failed: '+(err.message||'unknown'),true); });
+    };
+    reader.onerror = function(){ showToast('Failed to read the file',true); };
+    reader.readAsText(f,'UTF-8');
+  });
+
+  /* LIVE EDITOR */
+  function updateLiveFont(){
+    const lang = liveLang.value;
+    const font = getLatestFontForLang(lang);
+    if(font){ liveContent.style.fontFamily = '"'+font.family+'", Poppins, sans-serif'; liveFontHint.textContent = 'Rendering in "'+font.displayName+'"'; liveFontHint.classList.remove('warn'); }
+    else { liveContent.style.fontFamily = 'Poppins, sans-serif'; liveFontHint.textContent = 'No font uploaded for '+(lang==='hindi'?'Hindi':'English'); liveFontHint.classList.add('warn'); }
+    const cfg = displaySettings[lang] || displaySettings.english;
+    liveContent.style.fontSize = cfg.fontSize + 'rem';
+    liveContent.style.lineHeight = String(cfg.lineHeight);
+  }
+  function updateLiveCounts(){
+    const t = liveContent.value;
+    const trimmed = t.trim();
+    const words = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
+    liveWordCount.textContent = words;
+    liveKeystrokeCount.textContent = t.length;
+  }
+  liveLang.addEventListener('change', updateLiveFont);
+  liveContent.addEventListener('input', updateLiveCounts);
+  updateLiveFont(); updateLiveCounts();
+
+  saveLiveBtn.addEventListener('click', function(){
+    const title = liveTitle.value.trim();
+    const lang = liveLang.value;
+    const text = liveContent.value.trim();
+
+    if(title.length < 2){ showToast('Please enter a test title',true); liveTitle.focus(); return; }
+    if(adminData.files.some(function(x){ return (x.title||'').toLowerCase() === title.toLowerCase(); })){ showToast('Test with this title already exists',true); liveTitle.focus(); return; }
+    if(!text){ showToast('Please write content before saving',true); liveContent.focus(); return; }
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+    btnLoading(saveLiveBtn, saveLiveBtnText, 'Saving...');
+    db.ref('files').push({ title:title, language:lang, source:'Written Live', fileName:'—', size:text.length, words:wordCount, content:text, uploadedAt:Date.now(), uploadedBy:'ADMIN' }).then(function(){
+      btnReset(saveLiveBtn, saveLiveBtnText, 'Save Content');
+      liveTitle.value=''; liveContent.value=''; updateLiveCounts();
+      showToast('Live content saved');
+    }).catch(function(err){ btnReset(saveLiveBtn, saveLiveBtnText, 'Save Content'); showToast('Failed: '+(err.message||'unknown'),true); });
+  });
+
+  /* FILES RENDER */
+  function renderFiles(){
+    if(!firebaseReady.files){ filesTableBody.innerHTML = spinRow(8,'Loading test files...'); return; }
+    if(adminData.files.length === 0){ filesTableBody.innerHTML = '<tr class="empty-row"><td colspan="8">No test files uploaded yet.</td></tr>'; return; }
+    filesTableBody.innerHTML = adminData.files.map(function(f,i){
+      const stats = computeTestStats(f.content, f.language);
+      const langBadge = f.language === 'hindi' ? '<span class="badge hindi">Hindi</span>' : '<span class="badge english">English</span>';
+      return '<tr>' +
+        '<td><span class="truncate-sm" title="'+escapeHtml(f.title)+'">'+escapeHtml(f.title)+'</span></td>' +
+        '<td>'+langBadge+'</td>' +
+        '<td style="font-size:0.75rem;color:var(--gov-muted)">'+escapeHtml(f.source)+'</td>' +
+        '<td>'+(f.language === 'hindi' ? 400 : 500)+'</td>' +
+        '<td>'+stats.keystrokes+'</td>' +
+        '<td>'+stats.avgLen+'</td>' +
+        '<td>'+formatDate(f.uploadedAt)+'</td>' +
+        '<td class="sticky-col"><div class="row-actions">' +
+          '<button class="icon-btn view" data-view-file="'+i+'" title="Preview"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button>' +
+          '<button class="icon-btn edit" data-edit-file="'+i+'" title="Edit"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+          '<button class="icon-btn del" data-del-file="'+i+'" title="Delete"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>' +
+        '</div></td></tr>';
+    }).join('');
+  }
+
+  filesTableBody.addEventListener('click', function(e){
+    const delBtn = e.target.closest('[data-del-file]');
+    if(delBtn){
+      const idx = parseInt(delBtn.getAttribute('data-del-file'),10);
+      const f = adminData.files[idx];
+      if(!f) return;
+      openConfirm('Delete Test File','Delete <strong>'+escapeHtml(f.title)+'</strong>?', function(){
+        db.ref('files/'+f._key).remove().then(function(){ showToast('Test file removed'); });
+      });
+      return;
+    }
+    const editBtn = e.target.closest('[data-edit-file]');
+    if(editBtn){
+      const idx = parseInt(editBtn.getAttribute('data-edit-file'),10);
+      const f = adminData.files[idx];
+      if(f) openEditTestPage(f);
+      return;
+    }
+    const viewBtn = e.target.closest('[data-view-file]');
+    if(viewBtn){ const idx = parseInt(viewBtn.getAttribute('data-view-file'),10); const f = adminData.files[idx]; if(f) openPreview(f); }
+  });
+
+  /* EDIT TEST */
+  function updateEditFont(){
+    if (!editTestScreen.classList.contains('active')) return;
+    const lang = editTestLang.value || 'english';
+    const font = getLatestFontForLang(lang);
+    const cfg = displaySettings[lang] || displaySettings.english;
+    if (font){
+      editTestContent.style.setProperty('--edit-test-font', '"' + font.family + '", Poppins, sans-serif');
+      editFontHint.textContent = 'Rendering in "' + font.displayName + '"';
+      editFontHint.classList.remove('warn');
+    } else {
+      editTestContent.style.setProperty('--edit-test-font', 'Poppins, sans-serif');
+      editFontHint.textContent = 'No font uploaded for ' + (lang === 'hindi' ? 'Hindi' : 'English');
+      editFontHint.classList.add('warn');
+    }
+    editTestContent.style.setProperty('--edit-test-fs', cfg.fontSize + 'rem');
+    editTestContent.style.setProperty('--edit-test-lh', String(cfg.lineHeight));
+  }
+
+  function updateEditCounts(){
+    const t = editTestContent.value;
+    const trimmed = t.trim();
+    const words = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
+    editWordCount.textContent = words;
+    editKeystrokeCount.textContent = t.length;
+    updateEditSaveState();
+  }
+
+  function updateEditSaveState(){
+    const title = editTestTitle.value.trim();
+    const content = editTestContent.value.trim();
+    editTestSave.disabled = !(title.length >= 2 && content.length > 0);
+  }
+
+  function hasUnsavedEditChanges(){
+    if (!editingTestKey || !state.editOriginal) return false;
+    const o = state.editOriginal;
+    return editTestTitle.value.trim() !== o.title
+      || editTestLang.value !== o.language
+      || editTestContent.value.trim() !== o.content;
+  }
+
+  editTestLang.addEventListener('change', function(){ updateEditFont(); });
+  editTestTitle.addEventListener('input', updateEditSaveState);
+  editTestContent.addEventListener('input', updateEditCounts);
+
+  function openEditTestPage(f){
+    editingTestKey = f._key;
+    state.editOriginal = { title: (f.title || '').trim(), language: f.language || 'english', content: (f.content || '').trim() };
+    editTestTitle.value = f.title || '';
+    editTestLang.value = f.language || 'english';
+    editTestContent.value = f.content || '';
+    updateEditFont();
+    updateEditCounts();
+    navigateTo('editTest');
+    setTimeout(function(){ updateEditFont(); editTestTitle.focus(); }, 60);
+  }
+
+  function attemptCloseEditTest(){
+    if (hasUnsavedEditChanges()){
+      askUnsavedLeave(function(){
+        editingTestKey = null; state.editOriginal = null;
+        if (history.length > 1) history.back(); else navigateTo('admin');
+      });
+      return;
+    }
+    editingTestKey = null; state.editOriginal = null;
+    if (history.length > 1) history.back(); else navigateTo('admin');
+  }
+
+  editTestCancel.addEventListener('click', attemptCloseEditTest);
+  editBackBtnTop.addEventListener('click', attemptCloseEditTest);
+
+  editTestSave.addEventListener('click', function(){
+    if(!editingTestKey){ showToast('Nothing to save', true); return; }
+    const existing = adminData.files.find(function(f){ return f._key === editingTestKey; });
+    if (!existing){
+      showToast('This test no longer exists. It may have been deleted.', true);
+      editingTestKey = null; state.editOriginal = null;
+      if (history.length > 1) history.back(); else navigateTo('admin');
+      return;
+    }
+    const title = editTestTitle.value.trim();
+    const lang = editTestLang.value;
+    const content = editTestContent.value.trim();
+
+    if(title.length < 2){ showToast('Please enter a test title',true); editTestTitle.focus(); return; }
+    if(!content){ showToast('Please enter test content',true); editTestContent.focus(); return; }
+    const dup = adminData.files.some(function(x){ return x._key !== editingTestKey && (x.title||'').toLowerCase() === title.toLowerCase(); });
+    if(dup){ showToast('Another test with this title already exists',true); editTestTitle.focus(); return; }
+
+    const wordCount = content.split(/\s+/).filter(Boolean).length;
+
+    btnLoading(editTestSave, null, 'Saving...');
+    db.ref('files/'+editingTestKey).update({
+      title: title, language: lang, content: content,
+      words: wordCount, editedAt: Date.now()
+    }).then(function(){
+      btnReset(editTestSave, null, 'Save Changes');
+      showToast('Test updated successfully');
+      editingTestKey = null; state.editOriginal = null;
+      if (history.length > 1) history.back(); else navigateTo('admin');
+    }).catch(function(err){
+      btnReset(editTestSave, null, 'Save Changes');
+      showToast('Failed: ' + (err.message || 'unknown'), true);
+    });
+  });
+
+  /* PREVIEW */
+  function openPreview(f){
+    previewTitleText.textContent = f.title + ' · ' + (f.language==='hindi'?'Hindi':'English');
+    previewBody.textContent = f.content;
+    const font = getLatestFontForLang(f.language);
+    previewBody.style.fontFamily = font ? '"'+font.family+'", Poppins, sans-serif' : 'Poppins, sans-serif';
+    previewModal.classList.add('open');
+  }
+  function closePreview(){ previewModal.classList.remove('open'); }
+  previewClose.addEventListener('click', closePreview);
+  previewModal.addEventListener('click', function(e){ if(e.target === previewModal) closePreview(); });
+
+  /* CONFIRM & UNSAVED */
+  function openConfirm(title,html,onOk){ confirmTitle.textContent=title; confirmText.innerHTML=html; pendingDelete=onOk; confirmModal.classList.add('open'); }
+  function closeConfirm(){ confirmModal.classList.remove('open'); pendingDelete=null; }
+  confirmCancel.addEventListener('click', closeConfirm);
+  confirmModal.addEventListener('click', function(e){ if(e.target === confirmModal) closeConfirm(); });
+  confirmOk.addEventListener('click', function(){ const fn = pendingDelete; closeConfirm(); if(typeof fn === 'function') fn(); });
+
+  function askUnsavedLeave(onLeave){ pendingUnsavedCallback = onLeave; unsavedModal.classList.add('open'); }
+  function closeUnsavedModal(){ unsavedModal.classList.remove('open'); pendingUnsavedCallback = null; }
+  unsavedStay.addEventListener('click', closeUnsavedModal);
+  unsavedModal.addEventListener('click', function(e){ if(e.target === unsavedModal) closeUnsavedModal(); });
+  unsavedLeave.addEventListener('click', function(){ const fn = pendingUnsavedCallback; closeUnsavedModal(); if (typeof fn === 'function') fn(); });
+
+  /* DISPLAY SETTINGS */
+  function updateSettingsPreview(){
+    const fs = parseFloat(englishFontSize.value) || 1.4;
+    const lh = parseFloat(englishLineHeight.value) || 1.5;
+    const cw = parseInt(englishContentWidth.value,10) || 780;
+    settingsPreview.style.fontSize = fs + 'rem';
+    settingsPreview.style.lineHeight = String(lh);
+    settingsPreview.style.maxWidth = cw + 'px';
+  }
+  [englishFontSize, englishLineHeight, englishContentWidth].forEach(function(el){
+    if(el) el.addEventListener('input', updateSettingsPreview);
+  });
+
+  applySettingsBtn.addEventListener('click', function(){
+    const hFs = parseFloat(hindiFontSize.value), hLh = parseFloat(hindiLineHeight.value), hCw = parseInt(hindiContentWidth.value,10);
+    const eFs = parseFloat(englishFontSize.value), eLh = parseFloat(englishLineHeight.value), eCw = parseInt(englishContentWidth.value,10);
+    if(isNaN(hFs)||hFs<0.8||hFs>3){ showToast('Hindi font size must be 0.8–3.0',true); return; }
+    if(isNaN(hLh)||hLh<1||hLh>3){ showToast('Hindi line height must be 1.0–3.0',true); return; }
+    if(isNaN(hCw)||hCw<500||hCw>1600){ showToast('Hindi content width must be 500–1600 px',true); return; }
+    if(isNaN(eFs)||eFs<0.8||eFs>3){ showToast('English font size must be 0.8–3.0',true); return; }
+    if(isNaN(eLh)||eLh<1||eLh>3){ showToast('English line height must be 1.0–3.0',true); return; }
+    if(isNaN(eCw)||eCw<500||eCw>1600){ showToast('English content width must be 500–1600 px',true); return; }
+    btnLoading(applySettingsBtn, applySettingsBtnText, 'Saving...');
+    db.ref('displaySettings').set({
+      hindi: { fontSize:hFs, lineHeight:hLh, contentWidth:hCw },
+      english: { fontSize:eFs, lineHeight:eLh, contentWidth:eCw }
+    }).then(function(){
+      btnReset(applySettingsBtn, applySettingsBtnText, 'Save Settings');
+      showToast('Settings saved');
+    }).catch(function(err){ btnReset(applySettingsBtn, applySettingsBtnText, 'Save Settings'); showToast('Failed: '+(err.message||'unknown'),true); });
+  });
+
+  resetSettingsBtn.addEventListener('click', function(){
+    hindiFontSize.value='1.4'; hindiLineHeight.value='1.5'; hindiContentWidth.value='780';
+    englishFontSize.value='1.4'; englishLineHeight.value='1.5'; englishContentWidth.value='780';
+    updateSettingsPreview();
+    db.ref('displaySettings').set({
+      hindi: { fontSize:1.4, lineHeight:1.5, contentWidth:780 },
+      english: { fontSize:1.4, lineHeight:1.5, contentWidth:780 }
+    }).then(function(){ showToast('Settings reset'); });
+  });
+
+  /* HOME - LANGUAGE PICK */
+  document.querySelectorAll('[data-lang-pick]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.selectedLanguage = btn.getAttribute('data-lang-pick');
+      testListPage = 1;
+      renderTestList(state.selectedLanguage);
+      navigateTo('testList');
+    });
+  });
+
+  listBackBtn.addEventListener('click', function(){ if(history.length>1) history.back(); else navigateTo('home'); });
+
+  /* TEST LIST + PAGINATION */
+  function renderTestList(lang){
+    if(!lang){ state.selectedLanguage='english'; lang='english'; }
+    const label = lang === 'hindi' ? 'Hindi' : 'English';
+    testListTitle.textContent = label + ' Tests';
+    testListSub.textContent = 'Select a test to begin your typing assessment.';
+
+    if(!firebaseReady.files){ testListBody.innerHTML = spinRow(7,'Loading tests...'); testListPagination.innerHTML=''; return; }
+
+    const allTests = adminData.files.filter(function(f){ return f.language === lang; });
+
+    if(allTests.length === 0){
+      testListBody.innerHTML = '<tr class="empty-row"><td colspan="7">No tests available in '+label+' yet.</td></tr>';
+      testListPagination.innerHTML = '';
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(allTests.length / TESTS_PER_PAGE));
+    if(testListPage > totalPages) testListPage = totalPages;
+    if(testListPage < 1) testListPage = 1;
+    const startIdx = (testListPage - 1) * TESTS_PER_PAGE;
+    const tests = allTests.slice(startIdx, startIdx + TESTS_PER_PAGE);
+
+    testListBody.innerHTML = tests.map(function(t, i){
+      const origIndex = adminData.files.indexOf(t);
+      const stats = computeTestStats(t.content, t.language);
+      const langBadge = t.language === 'hindi' ? '<span class="badge hindi">Hindi</span>' : '<span class="badge english">English</span>';
+      const totalWords = (t.language === 'hindi' ? 400 : 500);
+      const serial = startIdx + i + 1;
+      return '<tr>' +
+        '<td class="sno">'+serial+'</td>' +
+        '<td class="title-cell"><span class="truncate" title="'+escapeHtml(t.title)+'">'+escapeHtml(t.title)+'</span></td>' +
+        '<td class="center-cell">'+langBadge+'</td>' +
+        '<td class="num-cell">'+totalWords+'</td>' +
+        '<td class="num-cell">'+stats.keystrokes+'</td>' +
+        '<td class="num-cell">'+stats.avgLen+'</td>' +
+        '<td class="sticky-col"><button class="start-btn-row" data-start-test-btn="'+origIndex+'" type="button"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg><span>Start</span></button></td>' +
+      '</tr>';
+    }).join('');
+
+    renderPagination(totalPages, allTests.length);
+  }
+
+  function renderPagination(totalPages, totalItems){
+    if(totalPages <= 1){
+      testListPagination.innerHTML = '<span class="pagination-info">'+totalItems+' test'+(totalItems!==1?'s':'')+' available</span>';
+      return;
+    }
+    let html = '';
+    html += '<button class="pagination-btn" data-page="prev" '+(testListPage===1?'disabled':'')+' type="button">‹ Prev</button>';
+
+    const pages = [];
+    const maxButtons = 7;
+    if(totalPages <= maxButtons){
+      for(let i=1;i<=totalPages;i++) pages.push(i);
+    } else if(testListPage <= 4){
+      for(let i=1;i<=5;i++) pages.push(i);
+      pages.push('...');
+      pages.push(totalPages);
+    } else if(testListPage >= totalPages - 3){
+      pages.push(1);
+      pages.push('...');
+      for(let i=totalPages-4;i<=totalPages;i++) pages.push(i);
+    } else {
+      pages.push(1);
+      pages.push('...');
+      pages.push(testListPage-1);
+      pages.push(testListPage);
+      pages.push(testListPage+1);
+      pages.push('...');
+      pages.push(totalPages);
+    }
+
+    pages.forEach(function(p){
+      if(p === '...'){
+        html += '<span class="pagination-dots">…</span>';
+      } else {
+        html += '<button class="pagination-btn'+(p===testListPage?' active':'')+'" data-page="'+p+'" type="button">'+p+'</button>';
+      }
+    });
+
+    html += '<button class="pagination-btn" data-page="next" '+(testListPage===totalPages?'disabled':'')+' type="button">Next ›</button>';
+    html += '<span class="pagination-info">Page '+testListPage+' of '+totalPages+' ('+totalItems+' tests)</span>';
+    testListPagination.innerHTML = html;
+  }
+
+  testListPagination.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-page]');
+    if(!btn || btn.disabled) return;
+    const p = btn.getAttribute('data-page');
+    if(p === 'prev') testListPage = Math.max(1, testListPage - 1);
+    else if(p === 'next') testListPage = testListPage + 1;
+    else testListPage = parseInt(p, 10);
+    renderTestList(state.selectedLanguage);
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(err){ window.scrollTo(0,0); }
+  });
+
+  testListBody.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-start-test-btn]');
+    if(!btn) return;
+    const idx = parseInt(btn.getAttribute('data-start-test-btn'),10);
+    const t = adminData.files[idx];
+    if(t) startTypingTest(t);
+  });
+
+  /* TYPING */
+  function updateFontCtrlDisplay(){
+    fontCtrlVal.textContent = Math.round(liveFontSize * 16);
+    document.documentElement.style.setProperty('--typing-fs', liveFontSize + 'rem');
+  }
+
+  fontIncBtn.addEventListener('click', function(){
+    liveFontSize = Math.min(MAX_FONT_SIZE, Math.round((liveFontSize + 0.1) * 10) / 10);
+    updateFontCtrlDisplay();
+  });
+  fontDecBtn.addEventListener('click', function(){
+    liveFontSize = Math.max(MIN_FONT_SIZE, Math.round((liveFontSize - 0.1) * 10) / 10);
+    updateFontCtrlDisplay();
+  });
+
+  function startTypingTest(test){
+    state.currentTest = test;
+    state.typingStarted = false;
+    state.isFinalizing = false;
+    state.backspaceCount = 0;
+    state.testStartTime = null;
+    state.testEndTime = null;
+    state.lastKeystrokeTime = null;
+
+    const padded = getPaddedContent(test.content, test.language);
+    state.currentPassage = padded;
+
+    const font = getLatestFontForLang(test.language);
+    if(font){ document.documentElement.style.setProperty('--test-font','"'+font.family+'", Poppins, sans-serif'); }
+    else { document.documentElement.style.setProperty('--test-font','Poppins, sans-serif'); }
+
+    applySettingsForLang(test.language);
+
+    liveFontSize = displaySettings[test.language].fontSize;
+    updateFontCtrlDisplay();
+
+    tbPassage.textContent = padded;
+    tbInput.value = ''; tbInput.scrollTop = 0;
+
+    tbFullscreenBtn.disabled = false; updateFsLabel();
+    stopTimer();
+    timeRemaining = TEST_DURATION_SECONDS; updateTimerDisplay();
+
+    try { history.pushState({ screen: 'typing' }, '', location.pathname + '#/typing'); } catch(e){}
+    showScreenByName('typing');
+    setTimeout(function(){ tbInput.focus(); },120);
+  }
+
+  let beepPlayed = false;
+  function playBeep(){ try { const ctx = new (window.AudioContext||window.webkitAudioContext)(); const osc = ctx.createOscillator(); const g = ctx.createGain(); osc.connect(g); g.connect(ctx.destination); osc.type='sine'; osc.frequency.value=880; g.gain.setValueAtTime(0.35, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.5); osc.start(); osc.stop(ctx.currentTime+0.5); } catch(e){} }
+  function updateTimerDisplay(){
+    const m = Math.floor(timeRemaining/60), s = timeRemaining%60;
+    timerValue.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    timerValue.classList.toggle('warn', timeRemaining <= 60);
+    if(timeRemaining === 60 && !beepPlayed){ beepPlayed = true; playBeep(); }
+  }
+  function startTimer(){
+    stopTimer(); beepPlayed = false;
+    state.testEndTime = Date.now() + timeRemaining * 1000;
+    timerInterval = setInterval(function(){
+      const remaining = Math.max(0, Math.ceil((state.testEndTime - Date.now()) / 1000));
+      timeRemaining = remaining;
+      updateTimerDisplay();
+      if(remaining <= 0){ stopTimer(); finalizeSubmit(true); }
+    }, 250);
+  }
+  function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval = null; } }
+
+  function updateFsLabel(){ tbFsLabel.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen'; }
+  tbFullscreenBtn.addEventListener('click', function(){
+    if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} return; }
+    const el = document.documentElement;
+    const req = el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
+    if(req){ const p = req.call(el); if(p && typeof p.catch==='function') p.catch(function(){}); }
+  });
+  document.addEventListener('fullscreenchange', updateFsLabel);
+
+  /* BACKSPACE - BULLETPROOF LOCK */
+  function isSpaceChar(ch){ return ch === ' ' || ch === '\n' || ch === '\t' || ch === '\r'; }
+  function findWordStart(val, pos){ let ws=0; for(let i=pos-1;i>=0;i--){ if(isSpaceChar(val.charAt(i))){ ws=i+1; break; } } return ws; }
+  function isBackspaceAllowed(){
+    const val = tbInput.value;
+    const pos = tbInput.selectionStart;
+    const selEnd = tbInput.selectionEnd;
+    if(selEnd !== pos) return false;
+    if(pos === 0) return false;
+    const charBefore = val.charAt(pos - 1);
+    if(isSpaceChar(charBefore)) return false;
+    const wordStart = findWordStart(val, pos);
+    if(pos <= wordStart) return false;
+    return true;
+  }
+  function performManualBackspace(){
+    const val = tbInput.value;
+    const pos = tbInput.selectionStart;
+    const newVal = val.substring(0, pos - 1) + val.substring(pos);
+    const newPos = pos - 1;
+    tbInput.value = newVal;
+    try { tbInput.setSelectionRange(newPos, newPos); } catch(err){}
+    tbInput.scrollTop = tbInput.scrollHeight;
+    try { const ev = new Event('input', { bubbles: true }); tbInput.dispatchEvent(ev); } catch(err){}
+  }
+
+  tbInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.keyCode === 13){ e.preventDefault(); return; }
+    if(e.key === 'Delete'){ e.preventDefault(); return; }
+    if((e.ctrlKey||e.metaKey) && (e.key||'').toLowerCase() === 'a'){ e.preventDefault(); return; }
+    const navKeys = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'];
+    if(navKeys.indexOf(e.key) !== -1){ e.preventDefault(); return; }
+    if(e.key === 'Tab'){ e.preventDefault(); return; }
+
+    if(e.key === 'Backspace' || e.keyCode === 8){
+      e.preventDefault();
+      if(!isBackspaceAllowed()) return;
+      if(state.typingStarted) state.backspaceCount++;
+      performManualBackspace();
+    }
+  });
+
+  tbInput.addEventListener('select', function(){ const len = tbInput.value.length; if(tbInput.selectionStart !== len || tbInput.selectionEnd !== len){ try{ tbInput.setSelectionRange(len,len); }catch(e){} } });
+  tbInput.addEventListener('click', function(){ const len = tbInput.value.length; try{ tbInput.setSelectionRange(len,len); }catch(e){} });
+  tbInput.addEventListener('paste', function(e){ e.preventDefault(); showToast('Pasting is not allowed',true); });
+  tbInput.addEventListener('copy', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('cut', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('drop', function(e){ e.preventDefault(); });
+  tbInput.addEventListener('mousedown', function(e){ if(e.button === 1){ e.preventDefault(); return false; } });
+  tbInput.addEventListener('auxclick', function(e){ if(e.button === 1){ e.preventDefault(); } });
+
+  tbInput.addEventListener('input', function(){
+    if(!state.typingStarted && tbInput.value.length > 0){
+      state.typingStarted = true;
+      state.testStartTime = Date.now();
+      state.lastKeystrokeTime = Date.now();
+      tbFullscreenBtn.disabled = true;
+      startTimer();
+    } else if(state.typingStarted){
+      state.lastKeystrokeTime = Date.now();
+    }
+    tbInput.scrollTop = tbInput.scrollHeight;
+  });
+
+  tbSubmitBtn.addEventListener('click', function(){ submitConfirmModal.classList.add('open'); });
+  function closeSubmitConfirm(){ submitConfirmModal.classList.remove('open'); }
+  submitCancel.addEventListener('click', closeSubmitConfirm);
+  submitConfirmModal.addEventListener('click', function(e){ if(e.target === submitConfirmModal) closeSubmitConfirm(); });
+  submitOk.addEventListener('click', function(){ closeSubmitConfirm(); finalizeSubmit(false); });
+
+  function smartCompare(passageWords, typedWords){
+    const results = [];
+    let correct = 0, missed = 0, wrong = 0, correctChars = 0;
+    let p = 0, t = 0;
+    const pMax = passageWords.length, tMax = typedWords.length;
+    while(t < tMax && p < pMax){
+      const typedW = typedWords[t];
+      if(typedW === passageWords[p]){ results.push({ type:'correct', typedWord:typedW, expectedWord:passageWords[p] }); correctChars += typedW.length + 1; correct++; t++; p++; continue; }
+      let skip = -1;
+      for(let k = 1; k <= 2; k++){ if(p+k < pMax && typedW === passageWords[p+k]){ skip = k; break; } }
+      if(skip > 0){
+        for(let m = 0; m < skip; m++){ results.push({ type:'missed', typedWord:null, expectedWord:passageWords[p+m] }); missed++; }
+        results.push({ type:'correct', typedWord:typedW, expectedWord:passageWords[p+skip] });
+        correctChars += typedW.length + 1; correct++; p += skip + 1; t++; continue;
+      }
+      results.push({ type:'wrong', typedWord:typedW, expectedWord:passageWords[p] });
+      wrong++; t++; p++;
+    }
+    while(t < tMax){ results.push({ type:'wrong', typedWord:typedWords[t], expectedWord:null }); wrong++; t++; }
+    while(p < pMax){ results.push({ type:'missed', typedWord:null, expectedWord:passageWords[p] }); missed++; p++; }
+    return { results, correct, missed, wrong, correctChars };
+  }
+
+  function finalizeSubmit(timeUp){
+    if (state.isFinalizing) return;
+    state.isFinalizing = true;
+    stopTimer();
+
+    const typed = tbInput.value;
+    const passageWords = state.currentPassage.trim().split(/\s+/).filter(Boolean);
+    const typedWords = typed.trim() ? typed.trim().split(/\s+/).filter(Boolean) : [];
+    const total = passageWords.length;
+
+    const cmp = smartCompare(passageWords, typedWords);
+    const correct = cmp.correct;
+    const correctChars = cmp.correctChars;
+    const marks = total > 0 ? Math.round((correct/total) * TEST_MAX_MARKS * 100) / 100 : 0;
+
+    if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} }
+
+    let timeTakenSec = 0;
+    if(state.testStartTime && state.lastKeystrokeTime){
+      timeTakenSec = Math.min(TEST_DURATION_SECONDS, Math.max(1, Math.round((state.lastKeystrokeTime - state.testStartTime)/1000)));
+    }
+    function fmtTime(sec){ const m = Math.floor(sec/60), s = sec%60; return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
+
+    const minutes = timeTakenSec / 60;
+    const netWpm = (minutes > 0 && correctChars > 0) ? Math.round((correctChars/5) / minutes) : 0;
+    const acc = typedWords.length > 0 ? Math.round((correct/typedWords.length) * 1000) / 10 : 0;
+
+    const pct = total > 0 ? (correct/total) * 100 : 0;
+    let badgeCls = 'low', badgeTxt = 'Needs Improvement';
+    if(pct >= 60){ badgeCls = 'good'; badgeTxt = 'Excellent'; }
+    else if(pct >= 40){ badgeCls = 'mid'; badgeTxt = 'Good'; }
+
+    rrTestName.textContent = state.currentTest ? state.currentTest.title : '—';
+    rrLang.textContent = state.currentTest ? (state.currentTest.language === 'hindi' ? 'Hindi' : 'English') : '—';
+    rrTestDate.textContent = formatDateShort(Date.now());
+    rrTotal.textContent = total;
+    rrTyped.textContent = typedWords.length;
+    rrCorrect.textContent = correct;
+    rrBackspace.textContent = state.backspaceCount;
+    rrMarks.textContent = marks;
+    rrWpmInfo.textContent = netWpm;
+    rrAccInfo.textContent = acc + '%';
+
+    rrMarksBig.innerHTML = marks + ' <span>/ 25</span>';
+    rrMarksBadge.textContent = badgeTxt;
+    rrMarksBadge.classList.remove('good','mid','low');
+    rrMarksBadge.classList.add(badgeCls);
+
+    rrWpm.textContent = netWpm;
+    rrAccuracy.textContent = acc + '%';
+    rrTimeTaken.textContent = fmtTime(timeTakenSec);
+    rrTimeSub.textContent = 'until last keystroke';
+
+    let html = '';
+    cmp.results.forEach(function(r){
+      if(r.type === 'missed'){ html += '<span class="cw missed">'+escapeHtml(r.expectedWord||'—')+'</span> '; }
+      else if(r.type === 'correct'){ html += '<span class="cw correct">'+escapeHtml(r.typedWord)+'</span> '; }
+      else { const tw = r.typedWord != null ? escapeHtml(r.typedWord) : ''; const ew = r.expectedWord != null ? escapeHtml(r.expectedWord) : '—'; html += '<span class="cw wrong">'+tw+'<span class="cw-arrow">→</span><span class="cw-good">'+ew+'</span></span> '; }
+    });
+    rrComparison.innerHTML = html;
+
+    if(timeUp) showToast('Time is up — test submitted automatically',true);
+
+    state.typingStarted = false;
+    tbInput.value = '';
+
+    if(state.currentTest){ applySettingsForLang(state.currentTest.language); }
+
+    try { history.replaceState({ screen: 'result' }, '', location.pathname + '#/result'); } catch(e){}
+    showScreenByName('result');
+    state.isFinalizing = false;
+  }
+
+  rrHomeBtn.addEventListener('click', function(){
+    state.currentTest = null; state.currentPassage='';
+    navigateTo('home');
+  });
+  rrTestListBtn.addEventListener('click', function(){
+    state.currentTest = null; state.currentPassage='';
+    renderTestList(state.selectedLanguage);
+    navigateTo('testList');
+  });
+  resultScreen.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  resultScreen.addEventListener('copy', function(e){ e.preventDefault(); });
+  resultScreen.addEventListener('cut', function(e){ e.preventDefault(); });
+
+  /* BOOT */
+  syncSettingsInputs();
+  applySettingsForLang('english');
+  updateSettingsPreview();
+  updateFontCtrlDisplay();
+  if(db) startFirebaseSync();
+
+  scrollTopInstant();
+  window.addEventListener('load', scrollTopInstant);
+
+  console.log('%cTypingX PRO — Ready (Typing box same height, shifted down)', 'color:#003366;font-weight:bold;font-size:14px;');
+
+})();
+</script>
+
+</body>
+</html>
